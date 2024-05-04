@@ -2,7 +2,8 @@
 #define _GRID_H_
 
 enum CELL_TYPE {
-    C_CLOSED = -3,
+    C_BLAST = -4,
+    C_CLOSED,
     C_FLAG,
     C_MINE,
     C_EMPTY,
@@ -21,10 +22,16 @@ extern const int *VISIBLE_GRID;
 
 int grid_init(int m, int n, int nmines);
 void grid_destroy(void);
-void open_cell(int i, int j);
+
+int open_cell(int i, int j);
+int open_around(int i, int j);
+int expand(int i, int j);
+
+void set_easy_flags(int i, int j);
 void toggle_flag(int i, int j);
+
+void open_mines(void);
+void open_safe_cells(void);
 void print_grid(const int *grid, int m, int n);
-void expand(int i, int j);
-void open_around(int i, int j);
 
 #endif

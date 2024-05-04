@@ -1,47 +1,56 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include <unistd.h>
 
 #include "grid.h"
 #include "raylib.h"
 
-
-const int CELL_SIZE = 40;
-
-bool LOST;
-Color get_color(int val);
-
 int main(void)
 {
-    int m = 15;
-    int n = 15;
-    int nmines = 15;
-    int flags = 0;
+    bool lost = false;
+    int m = 16;
+    int n = 16;
+    int cell_size = 40;
+    int nmines = 40;
+    int nopened = 0;
 
-    const int SCREEN_WIDTH = CELL_SIZE * n;
-    const int SCREEN_HEIGHT = CELL_SIZE * m;
+    const int SCREEN_WIDTH = cell_size * n;
+    const int SCREEN_HEIGHT = cell_size * m;
 
     if (grid_init(m, n, nmines) < 0) {
         fprintf(stderr, "Can't initialize grid\n");
+        abort();
     };
-    print_grid(GRID, m, n);
-    putchar('\n');
-    print_grid(VISIBLE_GRID, m, n);
 
-
-    Image im_cell1 = LoadImageSvg("resources/svg/cell1.svg", CELL_SIZE, CELL_SIZE);
-    Image im_cell2 = LoadImageSvg("resources/svg/cell2.svg", CELL_SIZE, CELL_SIZE);
-    Image im_cell3 = LoadImageSvg("resources/svg/cell3.svg", CELL_SIZE, CELL_SIZE);
-    Image im_cell4 = LoadImageSvg("resources/svg/cell4.svg", CELL_SIZE, CELL_SIZE);
-    Image im_cell5 = LoadImageSvg("resources/svg/cell5.svg", CELL_SIZE, CELL_SIZE);
-    Image im_cell6 = LoadImageSvg("resources/svg/cell6.svg", CELL_SIZE, CELL_SIZE);
-    Image im_cell7 = LoadImageSvg("resources/svg/cell7.svg", CELL_SIZE, CELL_SIZE);
-    Image im_cell8 = LoadImageSvg("resources/svg/cell8.svg", CELL_SIZE, CELL_SIZE);
-    Image im_cellup = LoadImageSvg("resources/svg/cellup.svg", CELL_SIZE, CELL_SIZE);
-    Image im_celldown = LoadImageSvg("resources/svg/celldown.svg", CELL_SIZE, CELL_SIZE);
-    Image im_cellmine = LoadImageSvg("resources/svg/cellmine.svg", CELL_SIZE, CELL_SIZE);
-    Image im_cellflag = LoadImageSvg("resources/svg/cellflag.svg", CELL_SIZE, CELL_SIZE);
+    Image im_cell1
+        = LoadImageSvg("resources/svg/cell1.svg", cell_size, cell_size);
+    Image im_cell2
+        = LoadImageSvg("resources/svg/cell2.svg", cell_size, cell_size);
+    Image im_cell3
+        = LoadImageSvg("resources/svg/cell3.svg", cell_size, cell_size);
+    Image im_cell4
+        = LoadImageSvg("resources/svg/cell4.svg", cell_size, cell_size);
+    Image im_cell5
+        = LoadImageSvg("resources/svg/cell5.svg", cell_size, cell_size);
+    Image im_cell6
+        = LoadImageSvg("resources/svg/cell6.svg", cell_size, cell_size);
+    Image im_cell7
+        = LoadImageSvg("resources/svg/cell7.svg", cell_size, cell_size);
+    Image im_cell8
+        = LoadImageSvg("resources/svg/cell8.svg", cell_size, cell_size);
+    Image im_cellup
+        = LoadImageSvg("resources/svg/cellup.svg", cell_size, cell_size);
+    Image im_celldown
+        = LoadImageSvg("resources/svg/celldown.svg", cell_size, cell_size);
+    Image im_cellmine
+        = LoadImageSvg("resources/svg/cellmine.svg", cell_size, cell_size);
+    Image im_cellflag
+        = LoadImageSvg("resources/svg/cellflag.svg", cell_size, cell_size);
+    Image im_cellblast
+        = LoadImageSvg("resources/svg/blast.svg", cell_size, cell_size);
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Minesweeper");
     SetTargetFPS(60);
@@ -58,109 +67,143 @@ int main(void)
     Texture2D celldown = LoadTextureFromImage(im_celldown);
     Texture2D cellmine = LoadTextureFromImage(im_cellmine);
     Texture2D cellflag = LoadTextureFromImage(im_cellflag);
+    Texture2D cellblast = LoadTextureFromImage(im_cellblast);
 
+    UnloadImage(im_cell1);
+    UnloadImage(im_cell2);
+    UnloadImage(im_cell3);
+    UnloadImage(im_cell4);
+    UnloadImage(im_cell5);
+    UnloadImage(im_cell6);
+    UnloadImage(im_cell7);
+    UnloadImage(im_cell8);
+    UnloadImage(im_cellup);
+    UnloadImage(im_celldown);
+    UnloadImage(im_cellmine);
+    UnloadImage(im_cellflag);
+    UnloadImage(im_cellblast);
 
     while (!WindowShouldClose()) {
-        BeginDrawing();
-
         if (IsKeyPressed(KEY_R)) {
             grid_destroy();
             if (grid_init(m, n, nmines) < 0) {
                 fprintf(stderr, "Can't initialize grid\n");
+                abort();
             };
-            LOST = false;
-            flags = 0;
+            lost = false;
+            nopened = 0;
         }
+        if (!lost && nopened + nmines != m * n) {
+            if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+                Vector2 mouse_pos = GetMousePosition();
+                int i = mouse_pos.y / cell_size;
+                int j = mouse_pos.x / cell_size;
+                int idx = i * n + j;
+                int cur_nopened = 0;
 
-        if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-            Vector2 mouse_pos = GetMousePosition();
-            int i = mouse_pos.y / CELL_SIZE;
-            int j = mouse_pos.x / CELL_SIZE;
-            if (GRID[i * n + j] == C_EMPTY)
-                expand(i, j);
-            else if (GRID[i * n + j] == C_MINE
-                     && VISIBLE_GRID[i * n + j] != C_FLAG) {
-                LOST = true;
-                DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT,
-                              (Color) {255, 255, 255, 200});
-                DrawText("YOU DIED", 100, 180, CELL_SIZE, RED);
-            } else if (VISIBLE_GRID[i * n + j] == C_CLOSED)
-                open_cell(i, j);
-            else
-                open_around(i, j);
-        }
+                set_easy_flags(i, j);
+                nopened += open_cell(i, j);
 
-        if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT)) {
-            Vector2 mouse_pos = GetMousePosition();
-            int i = mouse_pos.y / CELL_SIZE;
-            int j = mouse_pos.x / CELL_SIZE;
-            if (VISIBLE_GRID[i * n + j] == C_CLOSED) {
-                toggle_flag(i, j);
-                if (GRID[i * n + j] == C_MINE) {
-                    flags++;
-                    if (flags == nmines) {
-                        DrawRectangle(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT,
-                                      (Color) {255, 255, 255, 200});
-                        DrawText("YOU WIN", 100, 180, CELL_SIZE, GREEN);
-                    }
+                if (VISIBLE_GRID[idx] == C_EMPTY)
+                    nopened += expand(i, j);
+
+                cur_nopened = open_around(i, j);
+                if (VISIBLE_GRID[idx] == C_BLAST || cur_nopened == -1) {
+                    lost = true;
+                    open_mines();
                 }
-            } else if (VISIBLE_GRID[i * n + j] == C_FLAG) {
-                toggle_flag(i, j);
-                if (GRID[i * n + j] == C_MINE)
-                    flags--;
+                nopened += cur_nopened;
+            }
+
+            if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT)) {
+                Vector2 mouse_pos = GetMousePosition();
+                int i = mouse_pos.y / cell_size;
+                int j = mouse_pos.x / cell_size;
+                int idx = i * n + j;
+                if (VISIBLE_GRID[idx] == C_CLOSED) {
+                    toggle_flag(i, j);
+                    if (nopened + nmines == m * n)
+                        open_safe_cells();
+                } else if (VISIBLE_GRID[idx] == C_FLAG) {
+                    toggle_flag(i, j);
+                }
             }
         }
 
-        if (LOST || nmines == flags) {
-            EndDrawing();
-            continue;
-        }
-
+        BeginDrawing();
         ClearBackground(WHITE);
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 switch (VISIBLE_GRID[i * n + j]) {
+                case C_BLAST:
+                    DrawTexture(cellblast, j * cell_size, i * cell_size, GRAY);
+                    break;
                 case C_CLOSED:
-                    DrawTexture(cellup, j * CELL_SIZE, i * CELL_SIZE, GRAY);
+                    DrawTexture(cellup, j * cell_size, i * cell_size, GRAY);
                     break;
                 case C_FLAG:
-                    DrawTexture(cellflag, j * CELL_SIZE, i * CELL_SIZE, GRAY);
+                    DrawTexture(cellflag, j * cell_size, i * cell_size, GRAY);
                     break;
                 case C_MINE:
-                    DrawTexture(cellmine, j * CELL_SIZE, i * CELL_SIZE, GRAY);
+                    DrawTexture(cellmine, j * cell_size, i * cell_size, GRAY);
                     break;
                 case C_EMPTY:
-                    DrawTexture(celldown, j * CELL_SIZE, i * CELL_SIZE, GRAY);
+                    DrawTexture(celldown, j * cell_size, i * cell_size, GRAY);
                     break;
                 case C_ONE:
-                    DrawTexture(cell1, j * CELL_SIZE, i * CELL_SIZE, GRAY);
+                    DrawTexture(cell1, j * cell_size, i * cell_size, GRAY);
                     break;
                 case C_TWO:
-                    DrawTexture(cell2, j * CELL_SIZE, i * CELL_SIZE, GRAY);
+                    DrawTexture(cell2, j * cell_size, i * cell_size, GRAY);
                     break;
                 case C_THREE:
-                    DrawTexture(cell3, j * CELL_SIZE, i * CELL_SIZE, GRAY);
+                    DrawTexture(cell3, j * cell_size, i * cell_size, GRAY);
                     break;
                 case C_FOUR:
-                    DrawTexture(cell4, j * CELL_SIZE, i * CELL_SIZE, GRAY);
+                    DrawTexture(cell4, j * cell_size, i * cell_size, GRAY);
                     break;
                 case C_FIVE:
-                    DrawTexture(cell5, j * CELL_SIZE, i * CELL_SIZE, GRAY);
+                    DrawTexture(cell5, j * cell_size, i * cell_size, GRAY);
                     break;
                 case C_SIX:
-                    DrawTexture(cell6, j * CELL_SIZE, i * CELL_SIZE, GRAY);
+                    DrawTexture(cell6, j * cell_size, i * cell_size, GRAY);
                     break;
                 case C_SEVEN:
-                    DrawTexture(cell7, j * CELL_SIZE, i * CELL_SIZE, GRAY);
+                    DrawTexture(cell7, j * cell_size, i * cell_size, GRAY);
                     break;
                 case C_EIGHT:
-                    DrawTexture(cell8, j * CELL_SIZE, i * CELL_SIZE, GRAY);
+                    DrawTexture(cell8, j * cell_size, i * cell_size, GRAY);
                     break;
                 }
             }
         }
+
+        if (nopened + nmines == m * n) {
+            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(),
+                          (Color) {255, 255, 255, 100});
+            DrawText("You win", 100, 180, cell_size, GREEN);
+        } else if (lost) {
+            DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(),
+                          (Color) {255, 255, 255, 100});
+            DrawText("You lost", 100, 180, cell_size, RED);
+        }
+
         EndDrawing();
     }
+
+    UnloadTexture(cell1);
+    UnloadTexture(cell2);
+    UnloadTexture(cell3);
+    UnloadTexture(cell4);
+    UnloadTexture(cell5);
+    UnloadTexture(cell6);
+    UnloadTexture(cell7);
+    UnloadTexture(cell8);
+    UnloadTexture(cellup);
+    UnloadTexture(celldown);
+    UnloadTexture(cellmine);
+    UnloadTexture(cellflag);
+    UnloadTexture(cellblast);
 
     CloseWindow();
 

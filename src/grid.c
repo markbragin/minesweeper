@@ -1,6 +1,8 @@
 #include <assert.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include "grid.h"
@@ -59,12 +61,39 @@ void grid_destroy(void)
     VISIBLE_GRID = NULL;
 }
 
-void open_cell(int i, int j)
+int open_cell(int i, int j)
 {
     if (i < 0 || i >= SIZEM || j < 0 || j > SIZEN)
-        return;
+        return 0;
 
-    _VISIBLE_GRID[i * SIZEN + j] = _GRID[i * SIZEN + j];
+    int idx = i * SIZEN + j;
+    if (_VISIBLE_GRID[idx] >= C_EMPTY)
+        return 0;
+
+    if (_GRID[idx] >= C_EMPTY) {
+        _VISIBLE_GRID[idx] = _GRID[idx];
+        return 1;
+    } else if (_GRID[idx] == C_MINE && _VISIBLE_GRID[idx] != C_FLAG)
+        _VISIBLE_GRID[idx] = C_BLAST;
+    return 0;
+}
+
+void open_mines(void)
+{
+    for (int idx = 0; idx < SIZEM * SIZEN; idx++) {
+        if (_GRID[idx] == C_MINE
+            && !(_VISIBLE_GRID[idx] == C_BLAST
+                 || _VISIBLE_GRID[idx] == C_FLAG)) {
+            _VISIBLE_GRID[idx] = _GRID[idx];
+        }
+    }
+}
+
+void open_safe_cells(void)
+{
+    for (int idx = 0; idx < SIZEM * SIZEN; idx++)
+        if (_GRID[idx] != C_MINE)
+            _VISIBLE_GRID[idx] = _GRID[idx];
 }
 
 void toggle_flag(int i, int j)
@@ -76,12 +105,13 @@ void toggle_flag(int i, int j)
     _VISIBLE_GRID[i * SIZEN + j] = val == C_FLAG ? C_CLOSED : C_FLAG;
 }
 
-void expand(int i, int j)
+int expand(int i, int j)
 {
     if (i < 0 || i >= SIZEM || j < 0 || j > SIZEN)
-        return;
+        return 0;
 
     int ret;
+    int nopened = 0;
     Vector2 *curv;
     kdq_Vector2_t *queue = kdq_init_Vector2();
     kh_i32_t *set = kh_init_i32();
@@ -92,14 +122,14 @@ void expand(int i, int j)
         int i = (int)curv->x;
         int j = (int)curv->y;
         kh_put_i32(set, (i + 1) * 100 + j, &ret);
-        _VISIBLE_GRID[i * SIZEN + j] = _GRID[i * SIZEN + j];
+        nopened += open_cell(i, j);
         if (_GRID[i * SIZEN + j] > 0)
             continue;
         for (int k = 0; k < 8; k++) {
             int ii = i + DI[k];
             int jj = j + DJ[k];
             if (0 <= ii && ii < SIZEM && 0 <= jj && jj < SIZEN
-                && _GRID[ii * SIZEN + jj] != -1
+                && _GRID[ii * SIZEN + jj] != C_MINE
                 && (kh_get_i32(set, (ii + 1) * 100 + jj) == kh_end(set))) {
                 kdq_push_Vector2(queue, (Vector2) {ii, jj});
             }
@@ -108,36 +138,84 @@ void expand(int i, int j)
 
     kdq_destroy_Vector2(queue);
     kh_destroy_i32(set);
+    return nopened;
 }
 
-void open_around(int i, int j)
+int open_around(int i, int j)
 {
-    if (i < 0 || i >= SIZEM || j < 0 || j > SIZEN)
-        return;
+    if (i < 0 || i >= SIZEM || j < 0 || j > SIZEN
+        || _VISIBLE_GRID[i * SIZEN + j] == C_FLAG)
+        return 0;
 
+    int valid = 1;
     int nmines = 0;
     int nflags = 0;
+    int nopened = 0;
+
     for (int k = 0; k < 8; k++) {
         int ii = i + DI[k];
         int jj = j + DJ[k];
+        int idx = ii * SIZEN + jj;
         if (0 <= ii && ii < SIZEM && 0 <= jj && jj < SIZEN) {
-            if (_GRID[ii * SIZEN + jj] == C_MINE)
+            if (_GRID[idx] == C_MINE)
                 nmines++;
-            if (_VISIBLE_GRID[ii * SIZEN + jj] == C_FLAG)
+            if (_VISIBLE_GRID[idx] == C_FLAG) {
                 nflags++;
+                if (_GRID[idx] != C_MINE)
+                    valid = 0;
+            }
         }
     }
     if (nmines == nflags) {
         for (int k = 0; k < 8; k++) {
             int ii = i + DI[k];
             int jj = j + DJ[k];
+            int idx = ii * SIZEN + jj;
             if (0 <= ii && ii < SIZEM && 0 <= jj && jj < SIZEN) {
-                int val = _GRID[ii * SIZEN + jj];
-                if (val == C_EMPTY)
-                    expand(ii, jj);
-                else if (val != C_MINE)
-                    _VISIBLE_GRID[ii * SIZEN + jj] = val;
+                int gval = _GRID[idx];
+                int vval = _VISIBLE_GRID[idx];
+                if (gval == C_EMPTY || vval == C_CLOSED)
+                    nopened += expand(ii, jj);
+                else if ((gval == C_MINE && !(vval == C_FLAG))
+                         || gval != C_MINE)
+                    nopened += open_cell(ii, jj);
             }
+        }
+    }
+    if (valid)
+        return nopened;
+    else {
+        if (nflags == nmines)
+            return -1;
+        else
+            return 0;
+    }
+}
+
+void set_easy_flags(int i, int j)
+{
+    int nclosed = 0;
+    int nflags = 0;
+    int val = _GRID[i * SIZEN + j];
+    for (int k = 0; k < 8; k++) {
+        int ii = i + DI[k];
+        int jj = j + DJ[k];
+        int idx = ii * SIZEN + jj;
+        if (0 <= ii && ii < SIZEM && 0 <= jj && jj < SIZEN) {
+            if (_VISIBLE_GRID[idx] == C_CLOSED)
+                nclosed++;
+            else if (_VISIBLE_GRID[idx] == C_FLAG)
+                nflags++;
+        }
+    }
+    if (nclosed + nflags == val) {
+        for (int k = 0; k < 8; k++) {
+            int ii = i + DI[k];
+            int jj = j + DJ[k];
+            int idx = ii * SIZEN + jj;
+            if (0 <= ii && ii < SIZEM && 0 <= jj && jj < SIZEN)
+                if (_GRID[idx] == C_MINE)
+                    _VISIBLE_GRID[idx] = C_FLAG;
         }
     }
 }
@@ -146,7 +224,7 @@ void print_grid(const int *grid, int m, int n)
 {
     for (int i = 0; i < m; i++) {
         for (int j = 0; j < n; j++) {
-            printf("%2d ", grid[i * m + j]);
+            printf("%2d ", grid[i * n + j]);
         }
         putchar('\n');
     }
