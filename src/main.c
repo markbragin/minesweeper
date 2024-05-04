@@ -1,11 +1,11 @@
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 
 #include "grid.h"
 #include "raylib.h"
+
 
 const int CELL_SIZE = 40;
 
@@ -29,14 +29,36 @@ int main(void)
     putchar('\n');
     print_grid(VISIBLE_GRID, m, n);
 
-    Rectangle *cells = malloc(m * m * sizeof(Rectangle));
-    for (int i = 0; i < m; i++)
-        for (int j = 0; j < n; j++)
-            cells[i * n + j] = (Rectangle) {j * CELL_SIZE, i * CELL_SIZE,
-                                            CELL_SIZE, CELL_SIZE};
+
+    Image im_cell1 = LoadImageSvg("resources/svg/cell1.svg", CELL_SIZE, CELL_SIZE);
+    Image im_cell2 = LoadImageSvg("resources/svg/cell2.svg", CELL_SIZE, CELL_SIZE);
+    Image im_cell3 = LoadImageSvg("resources/svg/cell3.svg", CELL_SIZE, CELL_SIZE);
+    Image im_cell4 = LoadImageSvg("resources/svg/cell4.svg", CELL_SIZE, CELL_SIZE);
+    Image im_cell5 = LoadImageSvg("resources/svg/cell5.svg", CELL_SIZE, CELL_SIZE);
+    Image im_cell6 = LoadImageSvg("resources/svg/cell6.svg", CELL_SIZE, CELL_SIZE);
+    Image im_cell7 = LoadImageSvg("resources/svg/cell7.svg", CELL_SIZE, CELL_SIZE);
+    Image im_cell8 = LoadImageSvg("resources/svg/cell8.svg", CELL_SIZE, CELL_SIZE);
+    Image im_cellup = LoadImageSvg("resources/svg/cellup.svg", CELL_SIZE, CELL_SIZE);
+    Image im_celldown = LoadImageSvg("resources/svg/celldown.svg", CELL_SIZE, CELL_SIZE);
+    Image im_cellmine = LoadImageSvg("resources/svg/cellmine.svg", CELL_SIZE, CELL_SIZE);
+    Image im_cellflag = LoadImageSvg("resources/svg/cellflag.svg", CELL_SIZE, CELL_SIZE);
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Minesweeper");
     SetTargetFPS(60);
+
+    Texture2D cell1 = LoadTextureFromImage(im_cell1);
+    Texture2D cell2 = LoadTextureFromImage(im_cell2);
+    Texture2D cell3 = LoadTextureFromImage(im_cell3);
+    Texture2D cell4 = LoadTextureFromImage(im_cell4);
+    Texture2D cell5 = LoadTextureFromImage(im_cell5);
+    Texture2D cell6 = LoadTextureFromImage(im_cell6);
+    Texture2D cell7 = LoadTextureFromImage(im_cell7);
+    Texture2D cell8 = LoadTextureFromImage(im_cell8);
+    Texture2D cellup = LoadTextureFromImage(im_cellup);
+    Texture2D celldown = LoadTextureFromImage(im_celldown);
+    Texture2D cellmine = LoadTextureFromImage(im_cellmine);
+    Texture2D cellflag = LoadTextureFromImage(im_cellflag);
+
 
     while (!WindowShouldClose()) {
         BeginDrawing();
@@ -99,93 +121,48 @@ int main(void)
             for (int j = 0; j < n; j++) {
                 switch (VISIBLE_GRID[i * n + j]) {
                 case C_CLOSED:
-                    DrawText("#", j * CELL_SIZE + CELL_SIZE / 4, i * CELL_SIZE,
-                             CELL_SIZE, get_color(C_CLOSED));
+                    DrawTexture(cellup, j * CELL_SIZE, i * CELL_SIZE, GRAY);
                     break;
                 case C_FLAG:
-                    DrawText("!", j * CELL_SIZE + CELL_SIZE / 4, i * CELL_SIZE,
-                             CELL_SIZE, get_color(C_FLAG));
+                    DrawTexture(cellflag, j * CELL_SIZE, i * CELL_SIZE, GRAY);
                     break;
                 case C_MINE:
-                    DrawText("*", j * CELL_SIZE + CELL_SIZE / 4, i * CELL_SIZE,
-                             CELL_SIZE, get_color(C_MINE));
+                    DrawTexture(cellmine, j * CELL_SIZE, i * CELL_SIZE, GRAY);
                     break;
                 case C_EMPTY:
-                    DrawText("", j * CELL_SIZE + CELL_SIZE / 4, i * CELL_SIZE,
-                             CELL_SIZE, get_color(0));
+                    DrawTexture(celldown, j * CELL_SIZE, i * CELL_SIZE, GRAY);
                     break;
-                case 1:
-                    DrawText("1", j * CELL_SIZE + CELL_SIZE / 4, i * CELL_SIZE,
-                             CELL_SIZE, get_color(1));
+                case C_ONE:
+                    DrawTexture(cell1, j * CELL_SIZE, i * CELL_SIZE, GRAY);
                     break;
-                case 2:
-                    DrawText("2", j * CELL_SIZE + CELL_SIZE / 4, i * CELL_SIZE,
-                             CELL_SIZE, get_color(2));
+                case C_TWO:
+                    DrawTexture(cell2, j * CELL_SIZE, i * CELL_SIZE, GRAY);
                     break;
-                case 3:
-                    DrawText("3", j * CELL_SIZE + CELL_SIZE / 4, i * CELL_SIZE,
-                             CELL_SIZE, get_color(3));
+                case C_THREE:
+                    DrawTexture(cell3, j * CELL_SIZE, i * CELL_SIZE, GRAY);
                     break;
-                case 4:
-                    DrawText("4", j * CELL_SIZE + CELL_SIZE / 4, i * CELL_SIZE,
-                             CELL_SIZE, get_color(4));
+                case C_FOUR:
+                    DrawTexture(cell4, j * CELL_SIZE, i * CELL_SIZE, GRAY);
                     break;
-                case 5:
-                    DrawText("5", j * CELL_SIZE + CELL_SIZE / 4, i * CELL_SIZE,
-                             CELL_SIZE, get_color(5));
+                case C_FIVE:
+                    DrawTexture(cell5, j * CELL_SIZE, i * CELL_SIZE, GRAY);
                     break;
-                case 6:
-                    DrawText("6", j * CELL_SIZE + CELL_SIZE / 4, i * CELL_SIZE,
-                             CELL_SIZE, get_color(6));
+                case C_SIX:
+                    DrawTexture(cell6, j * CELL_SIZE, i * CELL_SIZE, GRAY);
                     break;
-                case 7:
-                    DrawText("7", j * CELL_SIZE + CELL_SIZE / 4, i * CELL_SIZE,
-                             CELL_SIZE, get_color(7));
+                case C_SEVEN:
+                    DrawTexture(cell7, j * CELL_SIZE, i * CELL_SIZE, GRAY);
                     break;
-                case 8:
-                    DrawText("8", j * CELL_SIZE + CELL_SIZE / 4, i * CELL_SIZE,
-                             CELL_SIZE, get_color(8));
+                case C_EIGHT:
+                    DrawTexture(cell8, j * CELL_SIZE, i * CELL_SIZE, GRAY);
                     break;
                 }
-                DrawRectangleLinesEx(cells[i * n + j], 0.5, BLACK);
             }
         }
         EndDrawing();
     }
 
     CloseWindow();
-    free(cells);
 
     return 0;
-}
-
-Color get_color(int val)
-{
-    switch (val) {
-    case C_ONE:
-        return BLUE;
-    case C_TWO:
-        return GREEN;
-    case C_THREE:
-        return PINK;
-    case C_FOUR:
-        return MAGENTA;
-    case C_FIVE:
-        return ORANGE;
-    case C_SIX:
-        return ORANGE;
-    case C_SEVEN:
-        return ORANGE;
-    case C_EIGHT:
-        return ORANGE;
-    case C_CLOSED:
-        return GRAY;
-    case C_FLAG:
-    case C_MINE:
-        return RED;
-    case C_EMPTY:
-        return WHITE;
-    default:
-        return GRAY;
-    }
 }
