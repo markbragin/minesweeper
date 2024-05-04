@@ -5,7 +5,7 @@ endif
 CFLAGS ?= -Wall -Wpedantic -g -std=c99 -pedantic
 LDFLAGS ?= -lraylib -lm
 
-BINARY ?= game
+BINARY ?= minesweeper
 BUILD_DIR ?= build
 SOURCE_DIR = src
 
