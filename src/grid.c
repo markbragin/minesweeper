@@ -2,7 +2,6 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
 
 #include "grid.h"
@@ -10,23 +9,35 @@
 #include "queue.h"
 #include "raylib.h"
 
+/* Queue and hashset for discovering cells (bfs) algo */
 KDQ_INIT(Vector2)
 KHASH_SET_INIT_INT(i32)
 
+/* Grid params */
 static int *_GRID;
 static int *_VISIBLE_GRID;
 static int SIZEM;
 static int SIZEN;
 
+/* Pointers to use grids outside module. (Bad thing?)*/
 const int *GRID;
 const int *VISIBLE_GRID;
 
+/* Deltas for surrounding cells */
 static const int DI[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
 static const int DJ[8] = {0, 1, 1, 1, 0, -1, -1, -1};
 
+/* Generates nmines mines on the board in random places */
 static void generate_mines(int nmines);
+
+/* Sets all cells to appropriate values (numbers of mines around) */
 static void count_mines(void);
+
+/* Sets all GRID's cells to C_EMPTY and VISIBLE_GRID's ones to C_CLOSED */
 static void clear_grids(void);
+
+/* Counts cells of given type around given cell in the grid */
+static int count_around(const int *grid, int i, int j, CELL_TYPE type);
 
 int grid_init(int m, int n, int nmines)
 {
@@ -63,18 +74,19 @@ void grid_destroy(void)
 
 int open_cell(int i, int j)
 {
-    if (i < 0 || i >= SIZEM || j < 0 || j > SIZEN)
-        return 0;
-
+    /* Ignore bad indexes, opened cells and flags */
     int idx = i * SIZEN + j;
-    if (_VISIBLE_GRID[idx] >= C_EMPTY)
+    if (i < 0 || i >= SIZEM || j < 0 || j > SIZEN
+        || _VISIBLE_GRID[idx] >= C_EMPTY || _VISIBLE_GRID[idx] == C_FLAG)
         return 0;
 
+    /* Opens safely */
     if (_GRID[idx] >= C_EMPTY) {
         _VISIBLE_GRID[idx] = _GRID[idx];
         return 1;
-    } else if (_GRID[idx] == C_MINE && _VISIBLE_GRID[idx] != C_FLAG)
-        _VISIBLE_GRID[idx] = C_BLAST;
+    } else if (_GRID[idx] == C_MINE)
+        _VISIBLE_GRID[idx] = C_BLAST; /* Opens not flaged mine */
+
     return 0;
 }
 
@@ -96,17 +108,28 @@ void open_safe_cells(void)
             _VISIBLE_GRID[idx] = _GRID[idx];
 }
 
+void set_safe_flags(void)
+{
+    for (int idx = 0; idx < SIZEM * SIZEN; idx++)
+        if (_GRID[idx] == C_MINE)
+            _VISIBLE_GRID[idx] = C_FLAG;
+}
+
 void toggle_flag(int i, int j)
 {
+    /* Ignore bad indexes */
     if (i < 0 || i >= SIZEM || j < 0 || j > SIZEN)
         return;
 
-    int val = _VISIBLE_GRID[i * SIZEN + j];
-    _VISIBLE_GRID[i * SIZEN + j] = val == C_FLAG ? C_CLOSED : C_FLAG;
+    int idx = i * SIZEN + j;
+    int val = _VISIBLE_GRID[idx];
+    _VISIBLE_GRID[idx] = val == C_FLAG ? C_CLOSED : C_FLAG;
 }
 
-int expand(int i, int j)
+/* Used bfs algo */
+int discover(int i, int j)
 {
+    /* Ignore bad indexes */
     if (i < 0 || i >= SIZEM || j < 0 || j > SIZEN)
         return 0;
 
@@ -121,10 +144,15 @@ int expand(int i, int j)
     while ((curv = kdq_pop_Vector2(queue)) != NULL) {
         int i = (int)curv->x;
         int j = (int)curv->y;
+
+        /* Here and later used (i + 1) * 100 + j key instead of i + j
+         * to avoid collisions */
         kh_put_i32(set, (i + 1) * 100 + j, &ret);
         nopened += open_cell(i, j);
+
         if (_GRID[i * SIZEN + j] > 0)
             continue;
+
         for (int k = 0; k < 8; k++) {
             int ii = i + DI[k];
             int jj = j + DJ[k];
@@ -143,71 +171,46 @@ int expand(int i, int j)
 
 int open_around(int i, int j)
 {
+    /* Ignore bad indexes and flag */
     if (i < 0 || i >= SIZEM || j < 0 || j > SIZEN
         || _VISIBLE_GRID[i * SIZEN + j] == C_FLAG)
         return 0;
 
-    int valid = 1;
-    int nmines = 0;
-    int nflags = 0;
+    bool valid = true;
     int nopened = 0;
+    int nmines = count_around(_GRID, i, j, C_MINE);
+    int nflags = count_around(_VISIBLE_GRID, i, j, C_FLAG);
 
-    for (int k = 0; k < 8; k++) {
-        int ii = i + DI[k];
-        int jj = j + DJ[k];
-        int idx = ii * SIZEN + jj;
-        if (0 <= ii && ii < SIZEM && 0 <= jj && jj < SIZEN) {
-            if (_GRID[idx] == C_MINE)
-                nmines++;
-            if (_VISIBLE_GRID[idx] == C_FLAG) {
-                nflags++;
-                if (_GRID[idx] != C_MINE)
-                    valid = 0;
-            }
-        }
-    }
+    /* If the number of mines and flags is the same, opens cells even if
+     * it's unsafe (mine) */
     if (nmines == nflags) {
         for (int k = 0; k < 8; k++) {
             int ii = i + DI[k];
             int jj = j + DJ[k];
             int idx = ii * SIZEN + jj;
             if (0 <= ii && ii < SIZEM && 0 <= jj && jj < SIZEN) {
-                int gval = _GRID[idx];
+                nopened += open_cell(ii, jj);
                 int vval = _VISIBLE_GRID[idx];
-                if (gval == C_EMPTY || vval == C_CLOSED)
-                    nopened += expand(ii, jj);
-                else if ((gval == C_MINE && !(vval == C_FLAG))
-                         || gval != C_MINE)
-                    nopened += open_cell(ii, jj);
+                if (vval == C_EMPTY)
+                    nopened += discover(ii, jj);
+                else if (vval == C_BLAST)
+                    valid = false;
             }
         }
     }
-    if (valid)
-        return nopened;
-    else {
-        if (nflags == nmines)
-            return -1;
-        else
-            return 0;
-    }
+
+    if (nflags == nmines)
+        return valid ? nopened : -1;
+    else
+        return 0;
 }
 
 void set_easy_flags(int i, int j)
 {
-    int nclosed = 0;
-    int nflags = 0;
     int val = _GRID[i * SIZEN + j];
-    for (int k = 0; k < 8; k++) {
-        int ii = i + DI[k];
-        int jj = j + DJ[k];
-        int idx = ii * SIZEN + jj;
-        if (0 <= ii && ii < SIZEM && 0 <= jj && jj < SIZEN) {
-            if (_VISIBLE_GRID[idx] == C_CLOSED)
-                nclosed++;
-            else if (_VISIBLE_GRID[idx] == C_FLAG)
-                nflags++;
-        }
-    }
+    int nclosed = count_around(_VISIBLE_GRID, i, j, C_CLOSED);
+    int nflags = count_around(_VISIBLE_GRID, i, j, C_FLAG);
+
     if (nclosed + nflags == val) {
         for (int k = 0; k < 8; k++) {
             int ii = i + DI[k];
@@ -218,6 +221,21 @@ void set_easy_flags(int i, int j)
                     _VISIBLE_GRID[idx] = C_FLAG;
         }
     }
+}
+
+static int count_around(const int *grid, int i, int j, CELL_TYPE type)
+{
+    int cnt = 0;
+    for (int k = 0; k < 8; k++) {
+        int ii = i + DI[k];
+        int jj = j + DJ[k];
+        int idx = ii * SIZEN + jj;
+        if (0 <= ii && ii < SIZEM && 0 <= jj && jj < SIZEN) {
+            if (grid[idx] == type)
+                cnt++;
+        }
+    }
+    return cnt;
 }
 
 void print_grid(const int *grid, int m, int n)
@@ -234,14 +252,16 @@ static void generate_mines(int nmines)
 {
     assert(SIZEM * SIZEN >= nmines);
 
-    for (int N = 0; N < nmines; N++) {
+    int N = 0;
+    while (N < nmines) {
         int i = GetRandomValue(0, SIZEM - 1);
         int j = GetRandomValue(0, SIZEN - 1);
-        if (_GRID[i * SIZEN + j] == C_MINE) {
-            N--;
+        int idx = i * SIZEN + j;
+        if (_GRID[idx] == C_MINE) {
             continue;
         } else {
-            _GRID[i * SIZEN + j] = C_MINE;
+            _GRID[idx] = C_MINE;
+            N++;
         }
     }
 }
@@ -250,28 +270,28 @@ static void count_mines(void)
 {
     for (int i = 0; i < SIZEM; i++) {
         for (int j = 0; j < SIZEN; j++) {
-            if (_GRID[i * SIZEN + j] == -1)
+            int idx = i * SIZEN + j;
+            if (_GRID[idx] == C_MINE)
                 continue;
 
             int count = 0;
             for (int k = 0; k < 8; k++) {
                 int ii = i + DI[k];
                 int jj = j + DJ[k];
+                /* If valid cell and it's a mine increment counter */
                 if (0 <= ii && ii < SIZEM && 0 <= jj && jj < SIZEN
-                    && _GRID[ii * SIZEN + jj] == -1)
+                    && _GRID[ii * SIZEN + jj] == C_MINE)
                     count++;
             }
-            _GRID[i * SIZEN + j] = count;
+            _GRID[idx] = count;
         }
     }
 }
 
 static void clear_grids(void)
 {
-    for (int i = 0; i < SIZEM; i++) {
-        for (int j = 0; j < SIZEN; j++) {
-            _GRID[i * SIZEN + j] = C_EMPTY;
-            _VISIBLE_GRID[i * SIZEN + j] = C_CLOSED;
-        }
+    for (int i = 0; i < SIZEM * SIZEN; i++) {
+        _GRID[i] = C_EMPTY;
+        _VISIBLE_GRID[i] = C_CLOSED;
     }
 }
