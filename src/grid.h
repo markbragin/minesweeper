@@ -40,8 +40,9 @@ int discover(int i, int j);
 /* Sets flags around given cell if it's unambiguous */
 void set_easy_flags(int i, int j);
 
-/* Toggles flag on the visible grid */
-void toggle_flag(int i, int j);
+/* Toggles flag on the visible grid.
+ * Returns 1 if set, -1 if unset, 0 if neither */
+int toggle_flag(int i, int j);
 
 /* Opens all the mines on the visible grid if cell is not C_FLAG or C_BLAST.
  * Used when lost */
