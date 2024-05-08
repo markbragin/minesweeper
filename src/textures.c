@@ -2,6 +2,11 @@
 #include "grid.h"
 #include "raylib.h"
 
+/* Path for all the media */
+#ifndef RESOURCES_DIR
+#define RESOURCES_DIR "resources"
+#endif
+
 Texture cells[13];
 Texture counter[11];
 Texture faces[5];
@@ -26,34 +31,22 @@ void load_textures(void)
 static void load_cells(void)
 {
     Image im_cells[13];
-    im_cells[C_EMPTY]
-        = LoadImageSvg("resources/cells/celldown.svg", CELL_SIZE, CELL_SIZE);
-    im_cells[C_ONE]
-        = LoadImageSvg("resources/cells/cell1.svg", CELL_SIZE, CELL_SIZE);
-    im_cells[C_TWO]
-        = LoadImageSvg("resources/cells/cell2.svg", CELL_SIZE, CELL_SIZE);
-    im_cells[C_THREE]
-        = LoadImageSvg("resources/cells/cell3.svg", CELL_SIZE, CELL_SIZE);
-    im_cells[C_FOUR]
-        = LoadImageSvg("resources/cells/cell4.svg", CELL_SIZE, CELL_SIZE);
-    im_cells[C_FIVE]
-        = LoadImageSvg("resources/cells/cell5.svg", CELL_SIZE, CELL_SIZE);
-    im_cells[C_SIX]
-        = LoadImageSvg("resources/cells/cell6.svg", CELL_SIZE, CELL_SIZE);
-    im_cells[C_SEVEN]
-        = LoadImageSvg("resources/cells/cell7.svg", CELL_SIZE, CELL_SIZE);
-    im_cells[C_EIGHT]
-        = LoadImageSvg("resources/cells/cell8.svg", CELL_SIZE, CELL_SIZE);
-    im_cells[C_CLOSED]
-        = LoadImageSvg("resources/cells/cellup.svg", CELL_SIZE, CELL_SIZE);
-    im_cells[C_MINE]
-        = LoadImageSvg("resources/cells/cellmine.svg", CELL_SIZE, CELL_SIZE);
-    im_cells[C_FLAG]
-        = LoadImageSvg("resources/cells/cellflag.svg", CELL_SIZE, CELL_SIZE);
-    im_cells[C_BLAST]
-        = LoadImageSvg("resources/cells/blast.svg", CELL_SIZE, CELL_SIZE);
+    im_cells[C_EMPTY]  = LoadImage(RESOURCES_DIR "/cells/celldown.png");
+    im_cells[C_ONE]    = LoadImage(RESOURCES_DIR "/cells/cell1.png");
+    im_cells[C_TWO]    = LoadImage(RESOURCES_DIR "/cells/cell2.png");
+    im_cells[C_THREE]  = LoadImage(RESOURCES_DIR "/cells/cell3.png");
+    im_cells[C_FOUR]   = LoadImage(RESOURCES_DIR "/cells/cell4.png");
+    im_cells[C_FIVE]   = LoadImage(RESOURCES_DIR "/cells/cell5.png");
+    im_cells[C_SIX]    = LoadImage(RESOURCES_DIR "/cells/cell6.png");
+    im_cells[C_SEVEN]  = LoadImage(RESOURCES_DIR "/cells/cell7.png");
+    im_cells[C_EIGHT]  = LoadImage(RESOURCES_DIR "/cells/cell8.png");
+    im_cells[C_CLOSED] = LoadImage(RESOURCES_DIR "/cells/cellup.png");
+    im_cells[C_MINE]   = LoadImage(RESOURCES_DIR "/cells/cellmine.png");
+    im_cells[C_FLAG]   = LoadImage(RESOURCES_DIR "/cells/cellflag.png");
+    im_cells[C_BLAST]  = LoadImage(RESOURCES_DIR "/cells/blast.png");
 
     for (int i = 0; i < 13; i++) {
+        ImageResize(&im_cells[i], CELL_SIZE, CELL_SIZE);
         cells[i] = LoadTextureFromImage(im_cells[i]); /* Create texture */
         UnloadImage(im_cells[i]); /* Unload image since not needed */
     }
@@ -62,30 +55,20 @@ static void load_cells(void)
 static void load_counter(void)
 {
     Image im_counter[11];
-    im_counter[0]  = LoadImageSvg("resources/counter/counter0.svg",
-                                  COUNTER_WIDTH, COUNTER_HEIGHT);
-    im_counter[1]  = LoadImageSvg("resources/counter/counter1.svg",
-                                  COUNTER_WIDTH, COUNTER_HEIGHT);
-    im_counter[2]  = LoadImageSvg("resources/counter/counter2.svg",
-                                  COUNTER_WIDTH, COUNTER_HEIGHT);
-    im_counter[3]  = LoadImageSvg("resources/counter/counter3.svg",
-                                  COUNTER_WIDTH, COUNTER_HEIGHT);
-    im_counter[4]  = LoadImageSvg("resources/counter/counter4.svg",
-                                  COUNTER_WIDTH, COUNTER_HEIGHT);
-    im_counter[5]  = LoadImageSvg("resources/counter/counter5.svg",
-                                  COUNTER_WIDTH, COUNTER_HEIGHT);
-    im_counter[6]  = LoadImageSvg("resources/counter/counter6.svg",
-                                  COUNTER_WIDTH, COUNTER_HEIGHT);
-    im_counter[7]  = LoadImageSvg("resources/counter/counter7.svg",
-                                  COUNTER_WIDTH, COUNTER_HEIGHT);
-    im_counter[8]  = LoadImageSvg("resources/counter/counter8.svg",
-                                  COUNTER_WIDTH, COUNTER_HEIGHT);
-    im_counter[9]  = LoadImageSvg("resources/counter/counter9.svg",
-                                  COUNTER_WIDTH, COUNTER_HEIGHT);
-    im_counter[10] = LoadImageSvg("resources/counter/counter-.svg",
-                                  COUNTER_WIDTH, COUNTER_HEIGHT);
+    im_counter[0]  = LoadImage(RESOURCES_DIR "/counter/counter0.png");
+    im_counter[1]  = LoadImage(RESOURCES_DIR "/counter/counter1.png");
+    im_counter[2]  = LoadImage(RESOURCES_DIR "/counter/counter2.png");
+    im_counter[3]  = LoadImage(RESOURCES_DIR "/counter/counter3.png");
+    im_counter[4]  = LoadImage(RESOURCES_DIR "/counter/counter4.png");
+    im_counter[5]  = LoadImage(RESOURCES_DIR "/counter/counter5.png");
+    im_counter[6]  = LoadImage(RESOURCES_DIR "/counter/counter6.png");
+    im_counter[7]  = LoadImage(RESOURCES_DIR "/counter/counter7.png");
+    im_counter[8]  = LoadImage(RESOURCES_DIR "/counter/counter8.png");
+    im_counter[9]  = LoadImage(RESOURCES_DIR "/counter/counter9.png");
+    im_counter[10] = LoadImage(RESOURCES_DIR "/counter/counter-.png");
 
     for (int i = 0; i < 11; i++) {
+        ImageResize(&im_counter[i], COUNTER_WIDTH, COUNTER_HEIGHT);
         counter[i] = LoadTextureFromImage(im_counter[i]); /* Create texture */
         UnloadImage(im_counter[i]); /* Unload image since not needed */
     }
@@ -94,18 +77,14 @@ static void load_counter(void)
 static void load_faces(void)
 {
     Image im_faces[5];
-    im_faces[0]
-        = LoadImageSvg("resources/faces/clickface.svg", FACE_SIZE, FACE_SIZE);
-    im_faces[1]
-        = LoadImageSvg("resources/faces/lostface.svg", FACE_SIZE, FACE_SIZE);
-    im_faces[2]
-        = LoadImageSvg("resources/faces/smileface.svg", FACE_SIZE, FACE_SIZE);
-    im_faces[3] = LoadImageSvg("resources/faces/smilefacedown.svg", FACE_SIZE,
-                               FACE_SIZE);
-    im_faces[4]
-        = LoadImageSvg("resources/faces/winface.svg", FACE_SIZE, FACE_SIZE);
+    im_faces[0] = LoadImage(RESOURCES_DIR "/faces/clickface.png");
+    im_faces[1] = LoadImage(RESOURCES_DIR "/faces/lostface.png");
+    im_faces[2] = LoadImage(RESOURCES_DIR "/faces/smileface.png");
+    im_faces[3] = LoadImage(RESOURCES_DIR "/faces/smilefacedown.png");
+    im_faces[4] = LoadImage(RESOURCES_DIR "/faces/winface.png");
 
     for (int i = 0; i < 5; i++) {
+        ImageResize(&im_faces[i], FACE_SIZE, FACE_SIZE);
         faces[i] = LoadTextureFromImage(im_faces[i]); /* Create texture */
         UnloadImage(im_faces[i]); /* Unload image since not needed */
     }

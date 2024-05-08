@@ -6,6 +6,8 @@ CFLAGS ?= -Wall -Wpedantic -g -std=c99 -pedantic
 LDFLAGS ?= -lraylib -lm
 
 BINARY ?= minesweeper
+ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+RESOURCES_DIR:=$(ROOT_DIR)/resources
 BUILD_DIR ?= build
 SOURCE_DIR = src
 
@@ -16,8 +18,9 @@ INCLUDE_DIRS = $(shell find $(SOURCE_DIR) -type d)
 INCLUDE_FLAGS = $(addprefix -I,$(INCLUDE_DIRS))
 DEPS := $(OBJECTS:%.o=%.d)
 
-override CFLAGS += $(INCLUDE_FLAGS)
+CUSTOM_CFLAGS = -DRESOURCES_DIR=\"$(RESOURCES_DIR)\"
 
+override CFLAGS += $(INCLUDE_FLAGS) $(CUSTOM_CFLAGS)
 
 .PHONY: all
 all: $(BINARY)
