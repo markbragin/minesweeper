@@ -9,11 +9,12 @@ Rectangle draw_centered_text(const char *text, int font_size, Color color)
     tx = (GetScreenWidth() - text_size.x) / 2;
     ty = (GetScreenHeight() - text_size.y) / 2;
     DrawTextEx(GetFontDefault(), text, (Vector2) {tx, ty}, font_size, 2, color);
+
     return (Rectangle) {tx, ty, text_size.x, text_size.y};
 }
 
-void dim_screen(void)
+void dim_area(Rectangle area)
 {
-    Color color = (Color) {0, 0, 0, 100};
-    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), color);
+    Color color = (Color) {0, 0, 0, 200};
+    DrawRectangleRec(area, color);
 }
