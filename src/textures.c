@@ -113,6 +113,10 @@ static void load_faces(void)
 
 void unload_textures(void)
 {
-    for (int i = 0; i < sizeof(cells); i++)
+    for (int i = 0; i < 13; i++)
         UnloadTexture(cells[i]);
+    for (int i = 0; i < 11; i++)
+        UnloadTexture(counter[i]);
+    for (int i = 0; i < 3; i++)
+        UnloadTexture(faces[i]);
 }
