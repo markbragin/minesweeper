@@ -2,10 +2,6 @@
 #define _GRID_H_
 
 typedef enum CELL_TYPE {
-    C_BLAST = -4,
-    C_CLOSED,
-    C_FLAG,
-    C_MINE,
     C_EMPTY,
     C_ONE,
     C_TWO,
@@ -15,6 +11,10 @@ typedef enum CELL_TYPE {
     C_SIX,
     C_SEVEN,
     C_EIGHT,
+    C_BLAST,
+    C_CLOSED,
+    C_FLAG,
+    C_MINE,
 } CELL_TYPE;
 
 /* Const pointers to allocated grids. NULL if unallocated */

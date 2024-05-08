@@ -77,11 +77,12 @@ int open_cell(int i, int j)
     /* Ignore bad indexes, opened cells and flags */
     int idx = i * SIZEN + j;
     if (i < 0 || i >= SIZEM || j < 0 || j > SIZEN
-        || _VISIBLE_GRID[idx] >= C_EMPTY || _VISIBLE_GRID[idx] == C_FLAG)
+        || (C_EMPTY <= _VISIBLE_GRID[idx] && _VISIBLE_GRID[idx] <= C_EIGHT)
+        || _VISIBLE_GRID[idx] == C_FLAG)
         return 0;
 
     /* Opens safely */
-    if (_GRID[idx] >= C_EMPTY) {
+    if (C_EMPTY <= _GRID[idx] && _GRID[idx] <= C_EIGHT) {
         _VISIBLE_GRID[idx] = _GRID[idx];
         return 1;
     } else if (_GRID[idx] == C_MINE)
