@@ -18,9 +18,15 @@ INCLUDE_DIRS = $(shell find $(SOURCE_DIR) -type d)
 INCLUDE_FLAGS = $(addprefix -I,$(INCLUDE_DIRS))
 DEPS := $(OBJECTS:%.o=%.d)
 
+# Path to resources via MACRO
 CUSTOM_CFLAGS = -DRESOURCES_DIR=\"$(RESOURCES_DIR)\"
 
 override CFLAGS += $(INCLUDE_FLAGS) $(CUSTOM_CFLAGS)
+
+# If raylib path was passed
+ifdef RAYLIB_PATH
+	LDFLAGS += -L$(RAYLIB_PATH)
+endif
 
 .PHONY: all
 all: $(BINARY)
