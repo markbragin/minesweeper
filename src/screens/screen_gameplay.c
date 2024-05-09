@@ -94,17 +94,21 @@ void update_gameplay_screen(void)
 
             NOPENED += open_cell(i, j);
 
-            if (VISIBLE_GRID[idx] == C_EMPTY)
-                NOPENED += discover(i, j);
-
-            int cur_nopened = 0;
-            cur_nopened     = open_around(i, j);
-            if (VISIBLE_GRID[idx] == C_BLAST || cur_nopened == -1) {
+            if (VISIBLE_GRID[idx] == C_BLAST) {
                 CURRENT_STATE = S_LOST;
                 END_TIME      = GetTime();
                 open_mines();
+            } else if (VISIBLE_GRID[idx] == C_EMPTY) {
+                NOPENED += discover(i, j);
+            } else {
+                int cur_nopened = open_around(i, j);
+                if (cur_nopened == -1) {
+                    CURRENT_STATE = S_LOST;
+                    END_TIME      = GetTime();
+                    open_mines();
+                }
+                NOPENED += cur_nopened;
             }
-            NOPENED += cur_nopened;
 
             if (NOPENED + NMINES == M * N) {
                 CURRENT_STATE = S_WON;
