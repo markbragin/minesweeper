@@ -24,6 +24,17 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
 cd ..
 ```
+
+#### For MinGW
+
+```
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release -G "MinGW Makefiles" ..
+cmake --build .
+cd ..
+```
+
 ---
 
 If **raylib** is installed on your machine in a custom path you can pass
@@ -32,9 +43,20 @@ it via `-DRAYLIB_PATH=path/to/raylib` to **cmake**:
 ```
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release .. -DRAYLIB_PATH=lib/
+cmake -DCMAKE_BUILD_TYPE=Release -DRAYLIB_PATH=lib/ ..
 cmake --build .
 cd ..
 ```
 
 Binary will be located in the root directory of the project.
+
+
+## Changelog
+
+- **v0.1.1**
+    - added mines generation after first click
+    - added ability to start new game in the middle of current one
+    - added setting cells down when mouse left key down
+    - fixed the display of negative numbers
+- **v0.1.0**
+    - First bad version
