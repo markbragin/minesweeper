@@ -187,10 +187,15 @@ static void draw_header(void)
     time_offset  = GetScreenWidth() - COUNTER_WIDTH * 2;
 
     /* Draw flags counter */
-    for (int i = 0; i < 3; i++) {
-        DrawTexture(counter[nflags % 10], flags_offset, pos_y, RED);
-        nflags /= 10;
+    int sign = nflags;
+    for (int i = 0; i < 3 && -100 < nflags && nflags < 1000; i++) {
+        int digit = abs(nflags % 10);
+        if (i == 2 && sign < 0)
+            DrawTexture(counter[10], flags_offset, pos_y, RED); /* 10 is minus*/
+        else
+            DrawTexture(counter[digit], flags_offset, pos_y, RED);
         flags_offset -= COUNTER_WIDTH;
+        nflags /= 10;
     }
 
     /* Draw face */
