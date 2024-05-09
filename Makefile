@@ -52,7 +52,7 @@ run: all
 	@./$(BINARY)
 
 .PHONY: release
-release: CFLAGS := -O2 $(INCLUDE_FLAGS)
+release: CFLAGS := -O2 $(INCLUDE_FLAGS) -DNDEBUG
 release: all
 
 NODEPS = clean
