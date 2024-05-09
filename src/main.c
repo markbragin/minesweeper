@@ -22,6 +22,7 @@ int main(void)
     /* Init window */
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Minesweeper");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
+    SetWindowMinSize(SCREEN_WIDTH, SCREEN_HEIGHT);
     SetTargetFPS(60);
 
     /* Load textures for cells */
