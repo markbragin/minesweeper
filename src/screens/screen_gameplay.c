@@ -67,11 +67,6 @@ void update_gameplay_screen(void)
 {
     Vector2 mouse_pos = GetMousePosition();
 
-    Rectangle screen_rect = {0, 0, GetScreenWidth(), GetScreenHeight()};
-    if (!CheckCollisionPointRec(mouse_pos, screen_rect)) {
-        return;
-    }
-
     /* New game if lost or won */
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)
         && CheckCollisionPointRec(mouse_pos, get_face_rect())) {
@@ -79,16 +74,24 @@ void update_gameplay_screen(void)
     }
 
     if (CURRENT_STATE == S_PLAYING) {
+        /* Up down cells around */
+        up_around(CELL_DOWN.x, CELL_DOWN.y);
+
         /* Offsets from {0, 0} when window resized. Need to center grid */
         int offx = (GetScreenWidth() - CELL_SIZE * N) / 2;
         int offy = (HEADER_HEIGHT + GetScreenHeight() - CELL_SIZE * M) / 2;
+
+        /* Check if click is on grid */
+        Rectangle grid_rect = {offx, offy, CELL_SIZE * N, CELL_SIZE * M};
+        if (!CheckCollisionPointRec(mouse_pos, grid_rect)) {
+            return;
+        }
 
         int i   = (mouse_pos.y - offy) / CELL_SIZE;
         int j   = (mouse_pos.x - offx) / CELL_SIZE;
         int idx = i * N + j;
 
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-            up_around(CELL_DOWN.x, CELL_DOWN.y);
             down_around(i, j);
             CELL_DOWN = (Vector2) {i, j};
         }
