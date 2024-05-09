@@ -24,6 +24,7 @@ typedef enum {
 
 /* Local (to module) variables */
 
+static bool AUTO_FLAGS;
 static Vector2 CELL_DOWN;
 static State CURRENT_STATE;
 static Face CURRENT_FACE;
@@ -66,6 +67,12 @@ void unload_gameplay_screen(void)
 void update_gameplay_screen(void)
 {
     Vector2 mouse_pos = GetMousePosition();
+
+
+    /* Feature for Sanek */
+    if (IsKeyPressed(KEY_F)) {
+        AUTO_FLAGS = AUTO_FLAGS ? false : true;
+    }
 
     /* New game if lost or won */
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)
@@ -123,6 +130,8 @@ void update_gameplay_screen(void)
                     open_mines();
                 }
                 NOPENED += cur_nopened;
+                if (AUTO_FLAGS)
+                    FLAGS_LEFT -= set_easy_flags(i, j);
             }
 
             if (NOPENED + NMINES == M * N) {

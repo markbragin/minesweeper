@@ -253,7 +253,7 @@ void up_around(int i, int j)
     }
 }
 
-void set_easy_flags(int i, int j)
+int set_easy_flags(int i, int j)
 {
     int val     = _GRID[i * SIZEN + j];
     int nclosed = count_around(_VISIBLE_GRID, i, j, C_CLOSED);
@@ -268,7 +268,9 @@ void set_easy_flags(int i, int j)
                 if (_GRID[idx] == C_MINE)
                     _VISIBLE_GRID[idx] = C_FLAG;
         }
+        return nclosed;
     }
+    return 0;
 }
 
 static int count_around(const int *grid, int i, int j, CELL_TYPE type)

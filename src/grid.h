@@ -56,8 +56,9 @@ void down_around(int i, int j);
  * given cell is a number. Or sets only current cell if it's down */
 void up_around(int i, int j);
 
-/* Sets flags around given cell if it's unambiguous */
-void set_easy_flags(int i, int j);
+/* Sets flags around given cell if it's unambiguous.
+ * Return number of flags set */
+int set_easy_flags(int i, int j);
 
 /* Toggles flag on the visible grid.
  * Returns 1 if set, -1 if unset, 0 if neither */
