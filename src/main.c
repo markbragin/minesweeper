@@ -36,6 +36,7 @@ int main(void)
     }
 
     unload_gameplay_screen();
+    unload_textures();
 
     return 0;
 }
