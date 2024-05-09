@@ -68,8 +68,7 @@ void update_gameplay_screen(void)
 
     /* New game if lost or won */
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)
-        && CheckCollisionPointRec(mouse_pos, get_face_rect())
-        && (CURRENT_STATE == S_LOST || CURRENT_STATE == S_WON)) {
+        && CheckCollisionPointRec(mouse_pos, get_face_rect())) {
         init_gameplay_screen(M, N, NMINES);
     }
 
@@ -90,7 +89,7 @@ void update_gameplay_screen(void)
             if (FIRST_CLICK) {
                 FIRST_CLICK = false;
                 generate_mines(i, j);
-                START_TIME  = GetTime();
+                START_TIME = GetTime();
             }
 
             NOPENED += open_cell(i, j);
