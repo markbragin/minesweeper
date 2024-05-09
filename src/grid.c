@@ -43,7 +43,7 @@ int grid_init(int m, int n, int nmines)
     _VISIBLE_GRID = malloc(m * n * sizeof(int));
     SIZEM         = m;
     SIZEN         = n;
-    NMINES = nmines;
+    NMINES        = nmines;
 
     if (!_GRID || !_VISIBLE_GRID)
         return -1;
@@ -209,6 +209,50 @@ int open_around(int i, int j)
         return 0;
 }
 
+void down_around(int i, int j)
+{
+    /* Ignore bad indexes */
+    if (i < 0 || i >= SIZEM || j < 0 || j > SIZEN)
+        return;
+
+    int idx = i * SIZEN + j;
+    if (_VISIBLE_GRID[idx] == C_CLOSED) {
+        _VISIBLE_GRID[idx] = C_DOWN;
+    } else {
+        for (int k = 0; k < 8; k++) {
+            int ii  = i + DI[k];
+            int jj  = j + DJ[k];
+            int idx = ii * SIZEN + jj;
+            if (0 <= ii && ii < SIZEM && 0 <= jj && jj < SIZEN) {
+                if (_VISIBLE_GRID[idx] == C_CLOSED)
+                    _VISIBLE_GRID[idx] = C_DOWN;
+            }
+        }
+    }
+}
+
+void up_around(int i, int j)
+{
+    /* Ignore bad indexes */
+    if (i < 0 || i >= SIZEM || j < 0 || j > SIZEN)
+        return;
+
+    int idx = i * SIZEN + j;
+    if (_VISIBLE_GRID[idx] == C_DOWN) {
+        _VISIBLE_GRID[idx] = C_CLOSED;
+    } else {
+        for (int k = 0; k < 8; k++) {
+            int ii  = i + DI[k];
+            int jj  = j + DJ[k];
+            int idx = ii * SIZEN + jj;
+            if (0 <= ii && ii < SIZEM && 0 <= jj && jj < SIZEN) {
+                if (_VISIBLE_GRID[idx] == C_DOWN)
+                    _VISIBLE_GRID[idx] = C_CLOSED;
+            }
+        }
+    }
+}
+
 void set_easy_flags(int i, int j)
 {
     int val     = _GRID[i * SIZEN + j];
@@ -264,8 +308,8 @@ int generate_mines(int i, int j)
 
     int N = 0;
     while (N < NMINES) {
-        int ii   = GetRandomValue(0, SIZEM - 1);
-        int jj   = GetRandomValue(0, SIZEN - 1);
+        int ii  = GetRandomValue(0, SIZEM - 1);
+        int jj  = GetRandomValue(0, SIZEN - 1);
         int idx = ii * SIZEN + jj;
         if ((ii == i && jj == j) || _GRID[idx] == C_MINE) {
             continue;

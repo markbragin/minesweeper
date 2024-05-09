@@ -7,7 +7,7 @@
 #define RESOURCES_DIR "resources"
 #endif
 
-Texture cells[13];
+Texture cells[14];
 Texture counter[11];
 Texture faces[5];
 
@@ -30,7 +30,7 @@ void load_textures(void)
 
 static void load_cells(void)
 {
-    Image im_cells[13];
+    Image im_cells[14];
     im_cells[C_EMPTY]  = LoadImage(RESOURCES_DIR "/cells/celldown.png");
     im_cells[C_ONE]    = LoadImage(RESOURCES_DIR "/cells/cell1.png");
     im_cells[C_TWO]    = LoadImage(RESOURCES_DIR "/cells/cell2.png");
@@ -44,8 +44,9 @@ static void load_cells(void)
     im_cells[C_MINE]   = LoadImage(RESOURCES_DIR "/cells/cellmine.png");
     im_cells[C_FLAG]   = LoadImage(RESOURCES_DIR "/cells/cellflag.png");
     im_cells[C_BLAST]  = LoadImage(RESOURCES_DIR "/cells/blast.png");
+    im_cells[C_DOWN]   = LoadImage(RESOURCES_DIR "/cells/celldown.png");
 
-    for (int i = 0; i < 13; i++) {
+    for (int i = 0; i < sizeof(im_cells) / sizeof(im_cells[0]); i++) {
         ImageResize(&im_cells[i], CELL_SIZE, CELL_SIZE);
         cells[i] = LoadTextureFromImage(im_cells[i]); /* Create texture */
         UnloadImage(im_cells[i]); /* Unload image since not needed */
@@ -67,7 +68,7 @@ static void load_counter(void)
     im_counter[9]  = LoadImage(RESOURCES_DIR "/counter/counter9.png");
     im_counter[10] = LoadImage(RESOURCES_DIR "/counter/counter-.png");
 
-    for (int i = 0; i < 11; i++) {
+    for (int i = 0; i < sizeof(im_counter) / sizeof(im_counter[0]); i++) {
         ImageResize(&im_counter[i], COUNTER_WIDTH, COUNTER_HEIGHT);
         counter[i] = LoadTextureFromImage(im_counter[i]); /* Create texture */
         UnloadImage(im_counter[i]); /* Unload image since not needed */
@@ -83,7 +84,7 @@ static void load_faces(void)
     im_faces[3] = LoadImage(RESOURCES_DIR "/faces/smilefacedown.png");
     im_faces[4] = LoadImage(RESOURCES_DIR "/faces/winface.png");
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < sizeof(im_faces) / sizeof(im_faces[0]); i++) {
         ImageResize(&im_faces[i], FACE_SIZE, FACE_SIZE);
         faces[i] = LoadTextureFromImage(im_faces[i]); /* Create texture */
         UnloadImage(im_faces[i]); /* Unload image since not needed */
@@ -92,10 +93,10 @@ static void load_faces(void)
 
 void unload_textures(void)
 {
-    for (int i = 0; i < 13; i++)
+    for (int i = 0; i < sizeof(cells) / sizeof(cells[0]); i++)
         UnloadTexture(cells[i]);
-    for (int i = 0; i < 11; i++)
+    for (int i = 0; i < sizeof(counter) / sizeof(counter[0]); i++)
         UnloadTexture(counter[i]);
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < sizeof(faces) / sizeof(faces[0]); i++)
         UnloadTexture(faces[i]);
 }

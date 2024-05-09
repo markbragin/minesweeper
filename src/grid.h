@@ -15,6 +15,7 @@ typedef enum CELL_TYPE {
     C_CLOSED,
     C_FLAG,
     C_MINE,
+    C_DOWN
 } CELL_TYPE;
 
 /* Const pointers to allocated grids. NULL if unallocated */
@@ -46,6 +47,14 @@ int open_around(int i, int j);
 
 /* Discovers safe cells around given cell. Returns number of opened cells */
 int discover(int i, int j);
+
+/* Set closed cells in the visible grid around to the down state if the
+ * given cell is a number. Or sets current cell if it's closed */
+void down_around(int i, int j);
+
+/* Set down cells in the visible grid around to the up state if the
+ * given cell is a number. Or sets only current cell if it's down */
+void up_around(int i, int j);
 
 /* Sets flags around given cell if it's unambiguous */
 void set_easy_flags(int i, int j);
