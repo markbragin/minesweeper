@@ -18,6 +18,7 @@ static int *_GRID;
 static int *_VISIBLE_GRID;
 static int SIZEM;
 static int SIZEN;
+static int NMINES;
 
 /* Pointers to use grids outside module. (Bad thing?)*/
 const int *GRID;
@@ -26,9 +27,6 @@ const int *VISIBLE_GRID;
 /* Deltas for surrounding cells */
 static const int DI[8] = {-1, -1, 0, 1, 1, 1, 0, -1};
 static const int DJ[8] = {0, 1, 1, 1, 0, -1, -1, -1};
-
-/* Generates nmines mines on the board in random places */
-static void generate_mines(int nmines);
 
 /* Sets all cells to appropriate values (numbers of mines around) */
 static void count_mines(void);
@@ -45,17 +43,14 @@ int grid_init(int m, int n, int nmines)
     _VISIBLE_GRID = malloc(m * n * sizeof(int));
     SIZEM         = m;
     SIZEN         = n;
+    NMINES = nmines;
 
     if (!_GRID || !_VISIBLE_GRID)
         return -1;
     if (m * n < nmines)
         return -2;
 
-    SetRandomSeed(time(NULL));
     clear_grids();
-    generate_mines(nmines);
-    count_mines();
-
     GRID         = _GRID;
     VISIBLE_GRID = _VISIBLE_GRID;
 
@@ -257,22 +252,31 @@ void print_grid(const int *grid, int m, int n)
     }
 }
 
-static void generate_mines(int nmines)
+int generate_mines(int i, int j)
 {
-    assert(SIZEM * SIZEN >= nmines);
+    assert(SIZEM * SIZEN >= NMINES);
+
+    /* -1 on bad indexes */
+    if (i < 0 || i >= SIZEM || j < 0 || j > SIZEN)
+        return -1;
+
+    SetRandomSeed(time(NULL));
 
     int N = 0;
-    while (N < nmines) {
-        int i   = GetRandomValue(0, SIZEM - 1);
-        int j   = GetRandomValue(0, SIZEN - 1);
-        int idx = i * SIZEN + j;
-        if (_GRID[idx] == C_MINE) {
+    while (N < NMINES) {
+        int ii   = GetRandomValue(0, SIZEM - 1);
+        int jj   = GetRandomValue(0, SIZEN - 1);
+        int idx = ii * SIZEN + jj;
+        if ((ii == i && jj == j) || _GRID[idx] == C_MINE) {
             continue;
         } else {
             _GRID[idx] = C_MINE;
             N++;
         }
     }
+
+    count_mines();
+    return 0;
 }
 
 static void count_mines(void)

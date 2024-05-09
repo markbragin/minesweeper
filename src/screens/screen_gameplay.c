@@ -89,6 +89,7 @@ void update_gameplay_screen(void)
 
             if (FIRST_CLICK) {
                 FIRST_CLICK = false;
+                generate_mines(i, j);
                 START_TIME  = GetTime();
             }
 

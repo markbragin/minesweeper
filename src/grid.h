@@ -21,11 +21,21 @@ typedef enum CELL_TYPE {
 extern const int *GRID;
 extern const int *VISIBLE_GRID;
 
-/* Inits grid. Caller must call grid_destroy to free memory */
+/* Inits grid. Caller must call grid_destroy to free memory.
+ * Returns:
+ * 0 on success
+ * -1 if can't allocate memory
+ * -2 if mines is more than cells in grid */
 int grid_init(int m, int n, int nmines);
 
 /* Destroys grid */
 void grid_destroy(void);
+
+/* Generates mines around i, j cell in random places.
+ * Returns:
+ * 0 on success
+ * -1 if bad indexes */
+int generate_mines(int i, int j);
 
 /* Opens cell and returns numbers of opened cells */
 int open_cell(int i, int j);
