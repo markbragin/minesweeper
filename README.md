@@ -53,6 +53,10 @@ Binary will be located in the root directory of the project.
 
 ## Changelog
 
+- **v0.1.2**
+    - added clickface
+    - fixed min window size on windows
+    - fixed bug when clicking around the grid
 - **v0.1.1**
     - added mines generation after first click
     - added ability to start new game in the middle of current one
