@@ -68,6 +68,8 @@ static void update_draw_frame(void)
         if (finish_gameplay_screen()) {
             init_main_menu_screen();
             CURRENT_SCREEN = MAIN_MENU;
+            SetWindowMinSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+            SetWindowSize(SCREEN_WIDTH, SCREEN_HEIGHT);
         }
     }
     default:
