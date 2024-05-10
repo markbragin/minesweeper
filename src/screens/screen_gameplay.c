@@ -68,37 +68,45 @@ void update_gameplay_screen(void)
 {
     Vector2 mouse_pos = GetMousePosition();
 
-
     /* Feature for Sanek */
     if (IsKeyPressed(KEY_F)) {
         AUTO_FLAGS = AUTO_FLAGS ? false : true;
     }
 
-    /* New game if lost or won */
+    /* New game on click on face */
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)
         && CheckCollisionPointRec(mouse_pos, get_face_rect())) {
         init_gameplay_screen(M, N, NMINES);
     }
 
     if (CURRENT_STATE == S_PLAYING) {
-        /* Up down cells around */
+        /* Reset temporary states */
+        CURRENT_FACE = F_SMILE;
         up_around(CELL_DOWN.x, CELL_DOWN.y);
 
         /* Offsets from {0, 0} when window resized. Need to center grid */
         int offx = (GetScreenWidth() - CELL_SIZE * N) / 2;
         int offy = (HEADER_HEIGHT + GetScreenHeight() - CELL_SIZE * M) / 2;
 
-        /* Check if click is on grid */
+        int i   = (mouse_pos.y - offy) / CELL_SIZE;
+        int j   = (mouse_pos.x - offx) / CELL_SIZE;
+        int idx = i * N + j;
+
+        /* Process click on header first */
+        if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            if (CheckCollisionPointRec(mouse_pos, get_face_rect())) {
+                CURRENT_FACE = F_SMILE_DOWN;
+            }
+        }
+
+        /* Process click on grid next */
         Rectangle grid_rect = {offx, offy, CELL_SIZE * N, CELL_SIZE * M};
         if (!CheckCollisionPointRec(mouse_pos, grid_rect)) {
             return;
         }
 
-        int i   = (mouse_pos.y - offy) / CELL_SIZE;
-        int j   = (mouse_pos.x - offx) / CELL_SIZE;
-        int idx = i * N + j;
-
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+            CURRENT_FACE = F_CLICK;
             down_around(i, j);
             CELL_DOWN = (Vector2) {i, j};
         }
@@ -118,6 +126,7 @@ void update_gameplay_screen(void)
 
             if (VISIBLE_GRID[idx] == C_BLAST) {
                 CURRENT_STATE = S_LOST;
+                CURRENT_FACE  = F_LOST;
                 END_TIME      = GetTime();
                 open_mines();
             } else if (VISIBLE_GRID[idx] == C_EMPTY) {
@@ -126,6 +135,7 @@ void update_gameplay_screen(void)
                 int cur_nopened = open_around(i, j);
                 if (cur_nopened == -1) {
                     CURRENT_STATE = S_LOST;
+                    CURRENT_FACE  = F_LOST;
                     END_TIME      = GetTime();
                     open_mines();
                 }
@@ -186,20 +196,14 @@ void draw_gameplay_screen(void)
 static void draw_header(void)
 {
     int time_offset, face_offset, flags_offset, pos_y, secs, nflags;
-    Face face;
 
     if (CURRENT_STATE == S_PLAYING) {
-        face = F_SMILE;
         if (FIRST_CLICK)
             secs = 0;
         else
             secs = (int)(GetTime() - START_TIME);
     } else {
         secs = (int)(END_TIME - START_TIME);
-        if (CURRENT_STATE == S_WON)
-            face = F_WON;
-        else if (CURRENT_STATE == S_LOST)
-            face = F_LOST;
     }
 
     nflags = FLAGS_LEFT;
@@ -223,7 +227,7 @@ static void draw_header(void)
     }
 
     /* Draw face */
-    DrawTexture(faces[face], face_offset, pos_y, LIGHTGRAY);
+    DrawTexture(faces[CURRENT_FACE], face_offset, pos_y, LIGHTGRAY);
 
     /* Draw time counter */
     for (int i = 0; i < 3; i++) {
