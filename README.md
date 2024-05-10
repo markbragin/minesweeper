@@ -53,6 +53,8 @@ Binary will be located in the root directory of the project.
 
 ## Changelog
 
+- **v0.2.0**
+    - added main menu
 - **v0.1.2**
     - added clickface
     - fixed min window size on windows
