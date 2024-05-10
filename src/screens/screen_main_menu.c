@@ -13,6 +13,10 @@ static int BUTTON_WIDTH  = 200;
 static int BUTTON_HEIGHT = 50;
 static int BUTTON_GAP    = 20;
 
+static int FONT_SIZE      = 40;
+static Color HOVER_COLOR  = {110, 110, 110, 255};
+static Color BUTTON_COLOR = BLACK;
+
 static bool FINISH_SCREEN; /* Should screen finish */
 
 /* Returns rectangle of i button, or {0, 0, 0, 0} on bad id.
@@ -58,30 +62,40 @@ void update_main_menu_screen(void)
 
 void draw_main_menu_screen(void)
 {
+    int text_width, posx_text, posy_text;
     Rectangle but1 = get_button(1);
     Rectangle but2 = get_button(2);
     Rectangle but3 = get_button(3);
 
     /* Draw first button*/
-    int text_width = MeasureText("Easy", 40);
-    int posx_text  = (GetScreenWidth() - text_width) / 2;
-    int posy_text  = but1.y + 5;
-    DrawText("Easy", posx_text, posy_text, 40, BLACK);
-    DrawRectangleLines(but1.x, but1.y, BUTTON_WIDTH, BUTTON_HEIGHT, BLACK);
+    text_width = MeasureText("Easy", FONT_SIZE);
+    posx_text  = (GetScreenWidth() - text_width) / 2;
+    posy_text  = (int)but1.y + (BUTTON_HEIGHT - FONT_SIZE) / 2;
+    if (CheckCollisionPointRec(GetMousePosition(), but1))
+        DrawRectangle(but1.x, but1.y, BUTTON_WIDTH, BUTTON_HEIGHT, HOVER_COLOR);
+    DrawText("Easy", posx_text, posy_text, FONT_SIZE, BUTTON_COLOR);
+    DrawRectangleLines(but1.x, but1.y, BUTTON_WIDTH, BUTTON_HEIGHT,
+                       BUTTON_COLOR);
 
     /* Draw second button*/
-    text_width = MeasureText("Medium", 40);
+    text_width = MeasureText("Medium", FONT_SIZE);
     posx_text  = (GetScreenWidth() - text_width) / 2;
-    posy_text  = but2.y + 5;
-    DrawText("Medium", posx_text, posy_text, 40, BLACK);
-    DrawRectangleLines(but2.x, but2.y, BUTTON_WIDTH, BUTTON_HEIGHT, BLACK);
+    posy_text  = (int)but2.y + (BUTTON_HEIGHT - FONT_SIZE) / 2;
+    if (CheckCollisionPointRec(GetMousePosition(), but2))
+        DrawRectangle(but2.x, but2.y, BUTTON_WIDTH, BUTTON_HEIGHT, HOVER_COLOR);
+    DrawText("Medium", posx_text, posy_text, FONT_SIZE, BUTTON_COLOR);
+    DrawRectangleLines(but2.x, but2.y, BUTTON_WIDTH, BUTTON_HEIGHT,
+                       BUTTON_COLOR);
 
     /* Draw third button*/
-    text_width = MeasureText("Hard", 40);
+    text_width = MeasureText("Hard", FONT_SIZE);
     posx_text  = (GetScreenWidth() - text_width) / 2;
-    posy_text  = but3.y + 5;
-    DrawText("Hard", posx_text, posy_text, 40, BLACK);
-    DrawRectangleLines(but3.x, but3.y, BUTTON_WIDTH, BUTTON_HEIGHT, BLACK);
+    posy_text  = (int)but3.y + (BUTTON_HEIGHT - FONT_SIZE) / 2;
+    if (CheckCollisionPointRec(GetMousePosition(), but3))
+        DrawRectangle(but3.x, but3.y, BUTTON_WIDTH, BUTTON_HEIGHT, HOVER_COLOR);
+    DrawText("Hard", posx_text, posy_text, FONT_SIZE, BUTTON_COLOR);
+    DrawRectangleLines(but3.x, but3.y, BUTTON_WIDTH, BUTTON_HEIGHT,
+                       BUTTON_COLOR);
 }
 
 static Rectangle get_button(int i)
