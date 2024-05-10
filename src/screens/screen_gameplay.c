@@ -24,10 +24,11 @@ typedef enum {
 
 /* Local (to module) variables */
 
-static bool AUTO_FLAGS;
-static Vector2 CELL_DOWN;
 static State CURRENT_STATE;
 static Face CURRENT_FACE;
+static bool FINISH_SCREEN;          /* Should screen finish */
+static Vector2 CELL_DOWN;           /* Last cell pressed */
+static bool AUTO_FLAGS;             /* Secret mode */
 static bool FIRST_CLICK;            /* First click? */
 static int M;                       /* Number of rows */
 static int N;                       /* Number of cols */
@@ -44,6 +45,7 @@ void init_gameplay_screen(int m, int n, int nmines)
 {
     CURRENT_STATE = S_PLAYING;
     CURRENT_FACE  = F_SMILE;
+    FINISH_SCREEN = false;
     FIRST_CLICK   = true;
     M             = m;
     N             = n;
@@ -61,12 +63,16 @@ void init_gameplay_screen(int m, int n, int nmines)
 void unload_gameplay_screen(void)
 {
     grid_destroy();
-    return;
 }
 
 void update_gameplay_screen(void)
 {
     Vector2 mouse_pos = GetMousePosition();
+
+    /* Finish on ESCAPE */
+    if (IsKeyPressed(KEY_ESCAPE)) {
+        FINISH_SCREEN = true;
+    }
 
     /* Feature for Sanek */
     if (IsKeyPressed(KEY_F)) {
@@ -242,4 +248,9 @@ static Rectangle get_face_rect(void)
     int pos_y = (HEADER_HEIGHT - COUNTER_HEIGHT) / 2;
     int pos_x = (GetScreenWidth() - FACE_SIZE) / 2;
     return (Rectangle) {pos_x, pos_y, FACE_SIZE, FACE_SIZE};
+}
+
+bool finish_gameplay_screen(void)
+{
+    return FINISH_SCREEN;
 }
