@@ -1,17 +1,17 @@
 #include <dirent.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "textures.h"
 #include "grid.h"
 #include "raylib.h"
+#include "textures.h"
 
 /* Path for all the media */
 #ifndef RESOURCES_DIR
 #define RESOURCES_DIR "resources"
 #endif
-
 
 Texture cells[14];
 Texture counter[11];
@@ -50,33 +50,33 @@ static void load_cells(const char *resources_dir)
     Image im_cells[14];
 
     sprintf(filepath, "%s/%s", resources_dir, "cells/celldown.png");
-    im_cells[C_EMPTY]  = LoadImage(filepath);
+    im_cells[C_EMPTY] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "cells/cell1.png");
-    im_cells[C_ONE]    = LoadImage(filepath);
+    im_cells[C_ONE] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "cells/cell2.png");
-    im_cells[C_TWO]    = LoadImage(filepath);
+    im_cells[C_TWO] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "cells/cell3.png");
-    im_cells[C_THREE]  = LoadImage(filepath);
+    im_cells[C_THREE] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "cells/cell4.png");
-    im_cells[C_FOUR]   = LoadImage(filepath);
+    im_cells[C_FOUR] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "cells/cell5.png");
-    im_cells[C_FIVE]   = LoadImage(filepath);
+    im_cells[C_FIVE] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "cells/cell6.png");
-    im_cells[C_SIX]    = LoadImage(filepath);
+    im_cells[C_SIX] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "cells/cell6.png");
-    im_cells[C_SEVEN]  = LoadImage(filepath);
+    im_cells[C_SEVEN] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "cells/cell8.png");
-    im_cells[C_EIGHT]  = LoadImage(filepath);
+    im_cells[C_EIGHT] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "cells/cellup.png");
     im_cells[C_CLOSED] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "cells/cellmine.png");
-    im_cells[C_MINE]   = LoadImage(filepath);
+    im_cells[C_MINE] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "cells/cellflag.png");
-    im_cells[C_FLAG]   = LoadImage(filepath);
+    im_cells[C_FLAG] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "cells/blast.png");
-    im_cells[C_BLAST]  = LoadImage(filepath);
+    im_cells[C_BLAST] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "cells/celldown.png");
-    im_cells[C_DOWN]   = LoadImage(filepath);
+    im_cells[C_DOWN] = LoadImage(filepath);
 
     for (int i = 0; i < sizeof(im_cells) / sizeof(im_cells[0]); i++) {
         ImageResize(&im_cells[i], CELL_SIZE, CELL_SIZE);
@@ -91,25 +91,25 @@ static void load_counter(const char *resources_dir)
     Image im_counter[11];
 
     sprintf(filepath, "%s/%s", resources_dir, "counter/counter0.png");
-    im_counter[0]  = LoadImage(filepath);
+    im_counter[0] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "counter/counter1.png");
-    im_counter[1]  = LoadImage(filepath);
+    im_counter[1] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "counter/counter2.png");
-    im_counter[2]  = LoadImage(filepath);
+    im_counter[2] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "counter/counter3.png");
-    im_counter[3]  = LoadImage(filepath);
+    im_counter[3] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "counter/counter4.png");
-    im_counter[4]  = LoadImage(filepath);
+    im_counter[4] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "counter/counter5.png");
-    im_counter[5]  = LoadImage(filepath);
+    im_counter[5] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "counter/counter6.png");
-    im_counter[6]  = LoadImage(filepath);
+    im_counter[6] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "counter/counter7.png");
-    im_counter[7]  = LoadImage(filepath);
+    im_counter[7] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "counter/counter8.png");
-    im_counter[8]  = LoadImage(filepath);
+    im_counter[8] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "counter/counter9.png");
-    im_counter[9]  = LoadImage(filepath);
+    im_counter[9] = LoadImage(filepath);
     sprintf(filepath, "%s/%s", resources_dir, "counter/counter-.png");
     im_counter[10] = LoadImage(filepath);
 
