@@ -1,3 +1,8 @@
+#include <dirent.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "textures.h"
 #include "grid.h"
 #include "raylib.h"
@@ -7,44 +12,71 @@
 #define RESOURCES_DIR "resources"
 #endif
 
+
 Texture cells[14];
 Texture counter[11];
 Texture faces[5];
 
 bool textures_loaded = false;
 
-static void load_cells(void);
-static void load_counter(void);
-static void load_faces(void);
+static void load_cells(const char *resources_dir);
+static void load_counter(const char *resources_dir);
+static void load_faces(const char *resources_dir);
 
 void load_textures(void)
 {
     if (textures_loaded)
         return;
 
-    load_cells();
-    load_counter();
-    load_faces();
+    char resources_dir[BUFSIZ];
+    if (opendir("resources")) { /* Try relative path first */
+        strcpy(resources_dir, "resources");
+    } else if (opendir(RESOURCES_DIR)) { /* Try absolute path */
+        strcpy(resources_dir, RESOURCES_DIR);
+    } else {
+        fprintf(stderr, "Can't find resources. Abort.\n");
+        abort();
+    }
+
+    load_cells(resources_dir);
+    load_counter(resources_dir);
+    load_faces(resources_dir);
     textures_loaded = true;
 }
 
-static void load_cells(void)
+static void load_cells(const char *resources_dir)
 {
+    char filepath[BUFSIZ];
     Image im_cells[14];
-    im_cells[C_EMPTY]  = LoadImage(RESOURCES_DIR "/cells/celldown.png");
-    im_cells[C_ONE]    = LoadImage(RESOURCES_DIR "/cells/cell1.png");
-    im_cells[C_TWO]    = LoadImage(RESOURCES_DIR "/cells/cell2.png");
-    im_cells[C_THREE]  = LoadImage(RESOURCES_DIR "/cells/cell3.png");
-    im_cells[C_FOUR]   = LoadImage(RESOURCES_DIR "/cells/cell4.png");
-    im_cells[C_FIVE]   = LoadImage(RESOURCES_DIR "/cells/cell5.png");
-    im_cells[C_SIX]    = LoadImage(RESOURCES_DIR "/cells/cell6.png");
-    im_cells[C_SEVEN]  = LoadImage(RESOURCES_DIR "/cells/cell7.png");
-    im_cells[C_EIGHT]  = LoadImage(RESOURCES_DIR "/cells/cell8.png");
-    im_cells[C_CLOSED] = LoadImage(RESOURCES_DIR "/cells/cellup.png");
-    im_cells[C_MINE]   = LoadImage(RESOURCES_DIR "/cells/cellmine.png");
-    im_cells[C_FLAG]   = LoadImage(RESOURCES_DIR "/cells/cellflag.png");
-    im_cells[C_BLAST]  = LoadImage(RESOURCES_DIR "/cells/blast.png");
-    im_cells[C_DOWN]   = LoadImage(RESOURCES_DIR "/cells/celldown.png");
+
+    sprintf(filepath, "%s/%s", resources_dir, "cells/celldown.png");
+    im_cells[C_EMPTY]  = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "cells/cell1.png");
+    im_cells[C_ONE]    = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "cells/cell2.png");
+    im_cells[C_TWO]    = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "cells/cell3.png");
+    im_cells[C_THREE]  = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "cells/cell4.png");
+    im_cells[C_FOUR]   = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "cells/cell5.png");
+    im_cells[C_FIVE]   = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "cells/cell6.png");
+    im_cells[C_SIX]    = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "cells/cell6.png");
+    im_cells[C_SEVEN]  = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "cells/cell8.png");
+    im_cells[C_EIGHT]  = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "cells/cellup.png");
+    im_cells[C_CLOSED] = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "cells/cellmine.png");
+    im_cells[C_MINE]   = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "cells/cellflag.png");
+    im_cells[C_FLAG]   = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "cells/blast.png");
+    im_cells[C_BLAST]  = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "cells/celldown.png");
+    im_cells[C_DOWN]   = LoadImage(filepath);
 
     for (int i = 0; i < sizeof(im_cells) / sizeof(im_cells[0]); i++) {
         ImageResize(&im_cells[i], CELL_SIZE, CELL_SIZE);
@@ -53,20 +85,33 @@ static void load_cells(void)
     }
 }
 
-static void load_counter(void)
+static void load_counter(const char *resources_dir)
 {
+    char filepath[BUFSIZ];
     Image im_counter[11];
-    im_counter[0]  = LoadImage(RESOURCES_DIR "/counter/counter0.png");
-    im_counter[1]  = LoadImage(RESOURCES_DIR "/counter/counter1.png");
-    im_counter[2]  = LoadImage(RESOURCES_DIR "/counter/counter2.png");
-    im_counter[3]  = LoadImage(RESOURCES_DIR "/counter/counter3.png");
-    im_counter[4]  = LoadImage(RESOURCES_DIR "/counter/counter4.png");
-    im_counter[5]  = LoadImage(RESOURCES_DIR "/counter/counter5.png");
-    im_counter[6]  = LoadImage(RESOURCES_DIR "/counter/counter6.png");
-    im_counter[7]  = LoadImage(RESOURCES_DIR "/counter/counter7.png");
-    im_counter[8]  = LoadImage(RESOURCES_DIR "/counter/counter8.png");
-    im_counter[9]  = LoadImage(RESOURCES_DIR "/counter/counter9.png");
-    im_counter[10] = LoadImage(RESOURCES_DIR "/counter/counter-.png");
+
+    sprintf(filepath, "%s/%s", resources_dir, "counter/counter0.png");
+    im_counter[0]  = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "counter/counter1.png");
+    im_counter[1]  = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "counter/counter2.png");
+    im_counter[2]  = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "counter/counter3.png");
+    im_counter[3]  = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "counter/counter4.png");
+    im_counter[4]  = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "counter/counter5.png");
+    im_counter[5]  = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "counter/counter6.png");
+    im_counter[6]  = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "counter/counter7.png");
+    im_counter[7]  = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "counter/counter8.png");
+    im_counter[8]  = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "counter/counter9.png");
+    im_counter[9]  = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "counter/counter-.png");
+    im_counter[10] = LoadImage(filepath);
 
     for (int i = 0; i < sizeof(im_counter) / sizeof(im_counter[0]); i++) {
         ImageResize(&im_counter[i], COUNTER_WIDTH, COUNTER_HEIGHT);
@@ -75,14 +120,21 @@ static void load_counter(void)
     }
 }
 
-static void load_faces(void)
+static void load_faces(const char *resources_dir)
 {
+    char filepath[BUFSIZ];
     Image im_faces[5];
-    im_faces[0] = LoadImage(RESOURCES_DIR "/faces/clickface.png");
-    im_faces[1] = LoadImage(RESOURCES_DIR "/faces/lostface.png");
-    im_faces[2] = LoadImage(RESOURCES_DIR "/faces/smileface.png");
-    im_faces[3] = LoadImage(RESOURCES_DIR "/faces/smilefacedown.png");
-    im_faces[4] = LoadImage(RESOURCES_DIR "/faces/winface.png");
+
+    sprintf(filepath, "%s/%s", resources_dir, "faces/clickface.png");
+    im_faces[0] = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "faces/lostface.png");
+    im_faces[1] = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "faces/smileface.png");
+    im_faces[2] = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "faces/smilefacedown.png");
+    im_faces[3] = LoadImage(filepath);
+    sprintf(filepath, "%s/%s", resources_dir, "faces/winface.png");
+    im_faces[4] = LoadImage(filepath);
 
     for (int i = 0; i < sizeof(im_faces) / sizeof(im_faces[0]); i++) {
         ImageResize(&im_faces[i], FACE_SIZE, FACE_SIZE);
