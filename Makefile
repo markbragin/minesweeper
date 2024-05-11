@@ -3,7 +3,7 @@ ifeq ($(origin CC),default)
 endif
 
 CFLAGS ?= -Wall -Wpedantic -g -std=c99 -pedantic
-LDFLAGS ?= -lraylib -lm
+LDFLAGS ?= -lraylib -lm -lsqlite3
 
 BINARY ?= minesweeper
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))

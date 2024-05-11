@@ -1,4 +1,7 @@
+#include <stdlib.h>
+
 #include "config.h"
+#include "db.h"
 #include "raylib.h"
 #include "screens.h"
 #include "textures.h"
@@ -11,6 +14,11 @@ static void update_draw_frame(void);
 
 int main(void)
 {
+    /* Trye to open DB */
+    if (db_open()) {
+        abort();
+    }
+
     /* Init window */
     InitWindow(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT, "Minesweeper");
     SetWindowState(FLAG_WINDOW_RESIZABLE);
@@ -30,6 +38,7 @@ int main(void)
     unload_main_menu_screen();
     unload_gameplay_screen();
     unload_textures();
+    db_close();
 
     return 0;
 }

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.14)
 
 project(minesweeper)
 
@@ -11,7 +11,7 @@ set(RAYLIB_VERSION 5.0)
 find_package(raylib ${RAYLIB_VERSION} QUIET) # QUIET or REQUIRED
 
 # If there's none, fetch and build raylib
-if (NOT raylib)
+if (NOT raylib_FOUND)
     include(FetchContent)
     FetchContent_Declare(
         raylib
@@ -27,6 +27,26 @@ if (NOT raylib)
     endif()
 endif()
 
+# Check if sqlite3 package is already installed
+find_package(SQLite3 REQUIRED)
+
+# If there's none, fetch and build sqlite3
+if (NOT SQLite3_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(
+        sqlite3
+        DOWNLOAD_EXTRACT_TIMESTAMP OFF
+        URL https://www.sqlite.org/2024/sqlite-amalgamation-3450300.zip
+    )
+    FetchContent_GetProperties(sqlite3)
+    if (NOT sqlite3_POPULATED) # Have we downloaded sqlite3 yet?
+        set(FETCHCONTENT_QUIET NO)
+        FetchContent_Populate(sqlite3)
+        set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
+        add_subdirectory(${sqlite3_SOURCE_DIR} ${sqlite3_BINARY_DIR})
+    endif()
+endif()
+
 # Sources
 set(
     SOURCES
@@ -37,6 +57,7 @@ set(
     src/screen_gameplay.c
     src/screen_main_menu.c
     src/config.c
+    src/db.c
 )
 
 # Executable
@@ -46,7 +67,7 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDES})
 
 # Libs (-l)
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib m)
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib sqlite3 m)
 
 # Output binary
 set_target_properties(

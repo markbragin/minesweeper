@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "config.h"
+#include "db.h"
 #include "drawings.h"
 #include "grid.h"
 #include "raylib.h"
@@ -143,6 +144,8 @@ void update_gameplay_screen(void)
                 END_TIME      = GetTime();
                 open_safe_cells();
                 set_safe_flags();
+                db_save_record((END_TIME - START_TIME),
+                               DIFFICULTIES_STR[DIFFICULTY]);
             }
         }
 
