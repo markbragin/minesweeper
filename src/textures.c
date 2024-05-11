@@ -1,15 +1,18 @@
 #include <stdbool.h>
 
+#include "config.h"
 #include "grid.h"
 #include "raylib.h"
+#include "screens.h"
 #include "textures.h"
 
+/* Shared variables */
 Texture cells[14];
 Texture counter[11];
 Texture faces[5];
 
-bool textures_loaded = false;
-
+/* Local (to module) variables */
+static bool textures_loaded = false;
 static void load_cells(void);
 static void load_counter(void);
 static void load_faces(void);
@@ -75,11 +78,11 @@ static void load_faces(void)
 {
     Image im_faces[5];
 
-    im_faces[0] = LoadImage("./resources/faces/clickface.png");
-    im_faces[1] = LoadImage("./resources/faces/lostface.png");
-    im_faces[2] = LoadImage("./resources/faces/smileface.png");
-    im_faces[3] = LoadImage("./resources/faces/smilefacedown.png");
-    im_faces[4] = LoadImage("./resources/faces/winface.png");
+    im_faces[F_CLICK]      = LoadImage("./resources/faces/clickface.png");
+    im_faces[F_LOST]       = LoadImage("./resources/faces/lostface.png");
+    im_faces[F_SMILE]      = LoadImage("./resources/faces/smileface.png");
+    im_faces[F_SMILE_DOWN] = LoadImage("./resources/faces/smilefacedown.png");
+    im_faces[F_WIN]        = LoadImage("./resources/faces/winface.png");
 
     for (int i = 0; i < sizeof(im_faces) / sizeof(im_faces[0]); i++) {
         ImageResize(&im_faces[i], FACE_SIZE, FACE_SIZE);

@@ -34,15 +34,9 @@ set(
     src/grid.c
     src/drawings.c
     src/textures.c
-    src/screens/screen_gameplay.c
-    src/screens/screen_main_menu.c
-)
-
-# Headers
-set(
-    INCLUDES 
-    src/
-    src/screens
+    src/screen_gameplay.c
+    src/screen_main_menu.c
+    src/config.c
 )
 
 # Executable

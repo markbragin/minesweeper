@@ -3,17 +3,29 @@
 
 #include <stdbool.h>
 
+#include "config.h"
+
 typedef enum GameScreen {
     UNKNOWN   = -1,
     MAIN_MENU = 0,
     GAMEPLAY,
 } GameScreen;
 
+/* Used for array indexes. Don't change numbers! */
+typedef enum {
+    F_CLICK = 0,
+    F_LOST,
+    F_SMILE,
+    F_SMILE_DOWN,
+    F_WIN
+} Face;
+
 extern GameScreen CURRENT_SCREEN;
-extern const int CELL_SIZE;
-extern const int COUNTER_WIDTH;
-extern const int COUNTER_HEIGHT;
-extern const int HEADER_HEIGHT;
+
+extern int SIZEM;
+extern int SIZEN;
+extern int NMINES;
+extern Difficulty DIFFICULTY;
 
 /* Main menu screen */
 void init_main_menu_screen(void);
@@ -23,7 +35,7 @@ void draw_main_menu_screen(void);
 bool finish_main_menu_screen(void);
 
 /* Gameplay screen */
-void init_gameplay_screen(int m, int n, int nmines);
+void init_gameplay_screen(void);
 void unload_gameplay_screen(void);
 void update_gameplay_screen(void);
 void draw_gameplay_screen(void);

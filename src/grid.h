@@ -1,8 +1,9 @@
 #ifndef _GRID_H_
 #define _GRID_H_
 
+/* Used for array indexes. Don't change numbers! */
 typedef enum CELL_TYPE {
-    C_EMPTY,
+    C_EMPTY = 0,
     C_ONE,
     C_TWO,
     C_THREE,

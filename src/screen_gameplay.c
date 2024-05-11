@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "config.h"
 #include "drawings.h"
 #include "grid.h"
 #include "raylib.h"
@@ -14,25 +15,14 @@ typedef enum {
     S_LOST
 } State;
 
-typedef enum {
-    F_CLICK,
-    F_LOST,
-    F_SMILE,
-    F_SMILE_DOWN,
-    F_WON
-} Face;
-
 /* Local (to module) variables */
-
 static State CURRENT_STATE;
 static Face CURRENT_FACE;
-static bool FINISH_SCREEN;          /* Should screen finish */
-static Vector2 CELL_DOWN;           /* Last cell pressed */
-static bool AUTO_FLAGS;             /* Secret mode */
-static bool FIRST_CLICK;            /* First click? */
-static int M;                       /* Number of rows */
-static int N;                       /* Number of cols */
-static int NMINES;                  /* Number of mines */
+static bool FINISH_SCREEN; /* Should screen finish */
+static Vector2 CELL_DOWN;  /* Last cell pressed */
+static bool AUTO_FLAGS;    /* Secret mode */
+static bool FIRST_CLICK;   /* First click? */
+
 static int FLAGS_LEFT;              /* Number of flags */
 static int NOPENED;                 /* Number of opened cells */
 static double START_TIME, END_TIME; /* Timing */
@@ -41,20 +31,17 @@ static char MESSAGE[256];           /* Message to print on victory or defeat */
 static void draw_header(void);
 static Rectangle get_face_rect(void);
 
-void init_gameplay_screen(int m, int n, int nmines)
+void init_gameplay_screen(void)
 {
     CURRENT_STATE = S_PLAYING;
     CURRENT_FACE  = F_SMILE;
     FINISH_SCREEN = false;
     FIRST_CLICK   = true;
-    M             = m;
-    N             = n;
-    NMINES        = nmines;
-    FLAGS_LEFT    = nmines;
+    FLAGS_LEFT    = NMINES;
     NOPENED       = 0;
 
     grid_destroy();
-    if (grid_init(M, N, NMINES) < 0) {
+    if (grid_init(SIZEM, SIZEN, NMINES) < 0) {
         fprintf(stderr, "Can't initialize grid\n");
         abort();
     };
@@ -82,7 +69,7 @@ void update_gameplay_screen(void)
     /* New game on click on face */
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)
         && CheckCollisionPointRec(mouse_pos, get_face_rect())) {
-        init_gameplay_screen(M, N, NMINES);
+        init_gameplay_screen();
     }
 
     if (CURRENT_STATE == S_PLAYING) {
@@ -91,12 +78,12 @@ void update_gameplay_screen(void)
         up_around(CELL_DOWN.x, CELL_DOWN.y);
 
         /* Offsets from {0, 0} when window resized. Need to center grid */
-        int offx = (GetScreenWidth() - CELL_SIZE * N) / 2;
-        int offy = (HEADER_HEIGHT + GetScreenHeight() - CELL_SIZE * M) / 2;
+        int offx = (GetScreenWidth() - CELL_SIZE * SIZEN) / 2;
+        int offy = (HEADER_HEIGHT + GetScreenHeight() - CELL_SIZE * SIZEM) / 2;
 
         int i   = (mouse_pos.y - offy) / CELL_SIZE;
         int j   = (mouse_pos.x - offx) / CELL_SIZE;
-        int idx = i * N + j;
+        int idx = i * SIZEN + j;
 
         /* Process click on header first */
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
@@ -106,7 +93,8 @@ void update_gameplay_screen(void)
         }
 
         /* Process click on grid next */
-        Rectangle grid_rect = {offx, offy, CELL_SIZE * N, CELL_SIZE * M};
+        Rectangle grid_rect
+            = {offx, offy, CELL_SIZE * SIZEN, CELL_SIZE * SIZEM};
         if (!CheckCollisionPointRec(mouse_pos, grid_rect)) {
             return;
         }
@@ -150,7 +138,7 @@ void update_gameplay_screen(void)
                     FLAGS_LEFT -= set_easy_flags(i, j);
             }
 
-            if (NOPENED + NMINES == M * N) {
+            if (NOPENED + NMINES == SIZEM * SIZEN) {
                 CURRENT_STATE = S_WON;
                 END_TIME      = GetTime();
                 open_safe_cells();
@@ -163,7 +151,7 @@ void update_gameplay_screen(void)
 
             int i   = (mouse_pos.y - offy) / CELL_SIZE;
             int j   = (mouse_pos.x - offx) / CELL_SIZE;
-            int idx = i * N + j;
+            int idx = i * SIZEN + j;
 
             if (VISIBLE_GRID[idx] == C_CLOSED || VISIBLE_GRID[idx] == C_FLAG) {
                 FLAGS_LEFT -= toggle_flag(i, j);
@@ -177,13 +165,13 @@ void draw_gameplay_screen(void)
     draw_header();
 
     /* Offsets from {0, 0} when window resized. Need to center grid */
-    int offx = (GetScreenWidth() - CELL_SIZE * N) / 2;
-    int offy = (HEADER_HEIGHT + GetScreenHeight() - CELL_SIZE * M) / 2;
+    int offx = (GetScreenWidth() - CELL_SIZE * SIZEN) / 2;
+    int offy = (HEADER_HEIGHT + GetScreenHeight() - CELL_SIZE * SIZEM) / 2;
 
-    for (int i = 0; i < M; i++) {
-        for (int j = 0; j < N; j++) {
-            DrawTexture(cells[VISIBLE_GRID[i * N + j]], offx + j * CELL_SIZE,
-                        offy + i * CELL_SIZE, LIGHTGRAY);
+    for (int i = 0; i < SIZEM; i++) {
+        for (int j = 0; j < SIZEN; j++) {
+            DrawTexture(cells[VISIBLE_GRID[i * SIZEN + j]],
+                        offx + j * CELL_SIZE, offy + i * CELL_SIZE, LIGHTGRAY);
         }
     }
 
