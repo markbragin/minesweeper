@@ -6,53 +6,55 @@ _Powered by [raylib](https://github.com/raysan5/raylib)_
 
 ## Installation
 
-### Make
-
-`make clean; make release`
-
-If **raylib** is installed on your machine in a custom path you can pass
-it via `RAYLIB_PATH=path/to/raylib` to **make**:
-
-`make clean; make release RAYLIB_PATH=lib/`
-
 ### Cmake
 
 ```
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build .
-cd ..
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
 ```
 
 #### For MinGW
 
 ```
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release -G "MinGW Makefiles" ..
-cmake --build .
-cd ..
+cmake -B build -DCMAKE_BUILD_TYPE=Release -G "MinGW Makefiles"
+cmake --build build --config Release
+```
+
+### Make
+
+(Use it only if `raylib 5.0` already installed)
+
+```
+make clean
+make release
 ```
 
 ---
 
-If **raylib** is installed on your machine in a custom path you can pass
-it via `-DRAYLIB_PATH=path/to/raylib` to **cmake**:
+You can run build in parallel with `-j` option like this:
 
 ```
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DRAYLIB_PATH=lib/ ..
-cmake --build .
-cd ..
+make clean
+make release -j 4
 ```
 
-Binary will be located in the root directory of the project.
+```
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release -j 4
+```
+
+where 4 is the number of concurrent processes to use when building.
+
+---
+
+Binary `minesweeper` will be located in the root directory of the project.
 
 
 ## Changelog
 
+- **v0.2.1**
+    - added hoverable buttons
+    - fixed minimum size of window when entering main menu
 - **v0.2.0**
     - added main menu
 - **v0.1.2**
