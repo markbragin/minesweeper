@@ -6,9 +6,10 @@
 #include "config.h"
 
 typedef enum GameScreen {
-    UNKNOWN   = -1,
-    MAIN_MENU = 0,
+    UNKNOWN = -1,
+    MAIN_MENU,
     GAMEPLAY,
+    HIGH_SCORE
 } GameScreen;
 
 /* Used for array indexes. Don't change numbers! */
@@ -33,5 +34,12 @@ void init_gameplay_screen(Difficulty difficulty);
 void unload_gameplay_screen(void);
 void update_gameplay_screen(void);
 void draw_gameplay_screen(void);
+
+/* High score screen */
+void init_high_score_screen(void);
+void unload_high_score_screen(void);
+void update_high_score_screen(void);
+void draw_high_score_screen(void);
+void finalize_high_score_screen(void);
 
 #endif

@@ -37,6 +37,8 @@ int main(void)
 
     unload_main_menu_screen();
     unload_gameplay_screen();
+    unload_high_score_screen();
+    finalize_high_score_screen();
     unload_textures();
     db_close();
 
@@ -46,20 +48,21 @@ int main(void)
 static void update_draw_frame_(void)
 {
     switch (current_screen) {
-    case MAIN_MENU: {
+    case MAIN_MENU:
         update_main_menu_screen();
         break;
-    }
-    case GAMEPLAY: {
+    case GAMEPLAY:
         update_gameplay_screen();
         break;
-    }
+    case HIGH_SCORE:
+        update_high_score_screen();
+        break;
     default:
         break;
     }
 
     BeginDrawing();
-    ClearBackground(GRAY);
+    ClearBackground(BACKGROUND_COLOR);
 
     switch (current_screen) {
     case MAIN_MENU:
@@ -67,6 +70,9 @@ static void update_draw_frame_(void)
         break;
     case GAMEPLAY:
         draw_gameplay_screen();
+        break;
+    case HIGH_SCORE:
+        draw_high_score_screen();
         break;
     default:
         break;

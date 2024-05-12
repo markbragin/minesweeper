@@ -4,6 +4,8 @@
 
 #include "config.h"
 #include "db.h"
+#include "kvec.h"
+#include "record.h"
 
 static const char *DB_PATH = "./database/minesweeper.db";
 static const char *CREATE_TABLE_SQL
@@ -73,4 +75,32 @@ int db_save_record(double time, Difficulty difficulty)
         sqlite3_free(error);
     }
     return err;
+}
+
+int db_fetch_all_by_difficulty(Difficulty diff, r_array *dest)
+{
+    sqlite3_stmt *res;
+    int rc;
+
+    rc = sqlite3_prepare_v2(db_,
+                            "SELECT timestamp, time FROM minesweeper\n"
+                            "WHERE difficulty=?1 ORDER BY time",
+                            -1, &res, 0);
+
+    if (rc != SQLITE_OK) {
+        fprintf(stderr, "Failed to fetch data: %s\n", sqlite3_errmsg(db_));
+        return rc;
+    }
+
+    if ((rc = sqlite3_bind_int(res, 1, diff)) != SQLITE_OK) {
+        fprintf(stderr, "Failed to bind: %s\n", sqlite3_errmsg(db_));
+        return rc;
+    }
+
+    while ((rc = sqlite3_step(res)) == SQLITE_ROW) {
+        Record r = {sqlite3_column_int(res, 0), sqlite3_column_double(res, 1)};
+        kv_push(Record, *dest, r);
+    }
+    rc = sqlite3_finalize(res);
+    return rc;
 }

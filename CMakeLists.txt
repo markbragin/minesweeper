@@ -58,6 +58,7 @@ set(
     src/screen_main_menu.c
     src/config.c
     src/db.c
+    src/screen_high_score.c
 )
 
 # Executable

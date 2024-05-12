@@ -10,18 +10,24 @@
 Texture cells[14];
 Texture counter[11];
 Texture faces[5];
+Texture cup;
 
 /* Local (to module) variables */
-static bool textures_loaded_ = false;
+static bool textures_loaded_;
 static void load_cells_(void);
 static void load_counter_(void);
 static void load_faces_(void);
+static void load_cup_(void);
 
 void load_textures(void)
 {
+    if (textures_loaded_)
+        return;
+
     load_cells_();
     load_counter_();
     load_faces_();
+    load_cup_();
     textures_loaded_ = true;
 }
 
@@ -89,6 +95,14 @@ static void load_faces_(void)
         faces[i] = LoadTextureFromImage(im_faces[i]); /* Create texture */
         UnloadImage(im_faces[i]); /* Unload image since not needed */
     }
+}
+
+static void load_cup_(void)
+{
+    Image im_cup = LoadImage("./resources/cup.png");
+    ImageResize(&im_cup, CUP_ICON_SIZE, CUP_ICON_SIZE);
+    cup = LoadTextureFromImage(im_cup);
+    UnloadImage(im_cup);
 }
 
 void unload_textures(void)

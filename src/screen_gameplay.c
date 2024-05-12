@@ -190,7 +190,7 @@ void draw_gameplay_screen(void)
     for (int i = 0; i < sizem_; i++) {
         for (int j = 0; j < sizen_; j++) {
             DrawTexture(cells[VISIBLE_GRID[i * sizem_ + j]],
-                        offx + j * CELL_SIZE, offy + i * CELL_SIZE, LIGHTGRAY);
+                        offx + j * CELL_SIZE, offy + i * CELL_SIZE, RAYWHITE);
         }
     }
 
@@ -240,7 +240,7 @@ static void draw_header_(void)
     }
 
     /* Draw face */
-    DrawTexture(faces[current_face_], face_offset, pos_y, LIGHTGRAY);
+    DrawTexture(faces[current_face_], face_offset, pos_y, BACKGROUND_COLOR);
 
     /* Draw time counter */
     for (int i = 0; i < 3; i++) {
