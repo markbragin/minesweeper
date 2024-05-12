@@ -89,11 +89,11 @@ int open_cell(int i, int j)
 void open_mines(void)
 {
     for (int idx = 0; idx < sizem_ * sizen_; idx++) {
-        if (grid_[idx] == C_MINE
-            && !(visible_grid_[idx] == C_BLAST
-                 || visible_grid_[idx] == C_FLAG)) {
+        if (visible_grid_[idx] == C_FLAG) {
+            if (grid_[idx] != C_MINE)
+                visible_grid_[idx] = C_FALSEMINE;
+        } else if (grid_[idx] == C_MINE && visible_grid_[idx] != C_BLAST)
             visible_grid_[idx] = grid_[idx];
-        }
     }
 }
 

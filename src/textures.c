@@ -7,7 +7,7 @@
 #include "textures.h"
 
 /* Shared variables */
-Texture cells[14];
+Texture cells[15];
 Texture counter[11];
 Texture faces[5];
 Texture cup;
@@ -33,22 +33,23 @@ void load_textures(void)
 
 static void load_cells_(void)
 {
-    Image im_cells[14];
+    Image im_cells[15];
 
-    im_cells[C_EMPTY]  = LoadImage("./resources/cells/celldown.png");
-    im_cells[C_ONE]    = LoadImage("./resources/cells/cell1.png");
-    im_cells[C_TWO]    = LoadImage("./resources/cells/cell2.png");
-    im_cells[C_THREE]  = LoadImage("./resources/cells/cell3.png");
-    im_cells[C_FOUR]   = LoadImage("./resources/cells/cell4.png");
-    im_cells[C_FIVE]   = LoadImage("./resources/cells/cell5.png");
-    im_cells[C_SIX]    = LoadImage("./resources/cells/cell6.png");
-    im_cells[C_SEVEN]  = LoadImage("./resources/cells/cell7.png");
-    im_cells[C_EIGHT]  = LoadImage("./resources/cells/cell8.png");
-    im_cells[C_BLAST]  = LoadImage("./resources/cells/blast.png");
-    im_cells[C_CLOSED] = LoadImage("./resources/cells/cellup.png");
-    im_cells[C_FLAG]   = LoadImage("./resources/cells/cellflag.png");
-    im_cells[C_MINE]   = LoadImage("./resources/cells/cellmine.png");
-    im_cells[C_DOWN]   = LoadImage("./resources/cells/celldown.png");
+    im_cells[C_EMPTY]     = LoadImage("./resources/cells/celldown.png");
+    im_cells[C_ONE]       = LoadImage("./resources/cells/cell1.png");
+    im_cells[C_TWO]       = LoadImage("./resources/cells/cell2.png");
+    im_cells[C_THREE]     = LoadImage("./resources/cells/cell3.png");
+    im_cells[C_FOUR]      = LoadImage("./resources/cells/cell4.png");
+    im_cells[C_FIVE]      = LoadImage("./resources/cells/cell5.png");
+    im_cells[C_SIX]       = LoadImage("./resources/cells/cell6.png");
+    im_cells[C_SEVEN]     = LoadImage("./resources/cells/cell7.png");
+    im_cells[C_EIGHT]     = LoadImage("./resources/cells/cell8.png");
+    im_cells[C_BLAST]     = LoadImage("./resources/cells/blast.png");
+    im_cells[C_CLOSED]    = LoadImage("./resources/cells/cellup.png");
+    im_cells[C_FLAG]      = LoadImage("./resources/cells/cellflag.png");
+    im_cells[C_MINE]      = LoadImage("./resources/cells/cellmine.png");
+    im_cells[C_DOWN]      = LoadImage("./resources/cells/celldown.png");
+    im_cells[C_FALSEMINE] = LoadImage("./resources/cells/falsemine.png");
 
     for (int i = 0; i < sizeof(im_cells) / sizeof(im_cells[0]); i++) {
         ImageResize(&im_cells[i], CELL_SIZE, CELL_SIZE);

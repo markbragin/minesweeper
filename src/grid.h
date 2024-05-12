@@ -16,7 +16,8 @@ typedef enum CellType {
     C_CLOSED,
     C_FLAG,
     C_MINE,
-    C_DOWN
+    C_DOWN,
+    C_FALSEMINE
 } CellType;
 
 /* Const pointers to allocated grids. NULL if unallocated */
