@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 
+#include "config.h"
 #include "db.h"
 
 static const char *DB_PATH = "./database/minesweeper.db";
@@ -10,8 +11,9 @@ static const char *CREATE_TABLE_SQL
       "    id INTEGER PRIMARY KEY,\n"
       "    timestamp INTEGER,\n"
       "    time REAL,\n"
-      "    difficulty TEXT\n"
-      ");";
+      "    difficulty INTEGER\n"
+      ");"
+      "PRAGMA user_version=1";
 
 /* Create ./database directory if needed */
 static void create_database_dir_(void);
@@ -54,7 +56,7 @@ int db_close(void)
     return err;
 }
 
-int db_save_record(double time, const char *difficulty)
+int db_save_record(double time, Difficulty difficulty)
 {
     char sql_query[1024];
     int err;
@@ -62,7 +64,7 @@ int db_save_record(double time, const char *difficulty)
 
     sprintf(sql_query,
             "INSERT INTO minesweeper (timestamp, time, difficulty)"
-            "VALUES (unixepoch(), %f, '%s');",
+            "VALUES (unixepoch(), %f, %d);",
             time, difficulty);
 
     if ((err = sqlite3_exec(db_, sql_query, NULL, NULL, &error))) {

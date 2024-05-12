@@ -161,8 +161,7 @@ void update_gameplay_screen(void)
                 end_time       = GetTime();
                 open_safe_cells();
                 set_safe_flags();
-                db_save_record((end_time - start_time_),
-                               DIFFICULTIES_STR[difficulty_]);
+                db_save_record((end_time - start_time_), difficulty_);
             }
         }
 
