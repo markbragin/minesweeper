@@ -54,6 +54,9 @@ Binary `minesweeper` will be located in the root directory of the project.
 
 ## Changelog
 
+- **v0.3.0**
+    - added high scores
+    - added false mines
 - **v0.2.1**
     - added hoverable buttons
     - fixed minimum size of window when entering main menu
