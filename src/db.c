@@ -46,7 +46,11 @@ static void create_database_dir_(void)
 {
     struct stat st;
     if (stat("./database", &st) == -1) {
+#if defined(_WIN32)
+        if (mkdir("./database") == -1) {
+#else
         if (mkdir("./database", 0755) == -1) {
+#endif
             perror("Can't create directory './database'");
         }
     }
