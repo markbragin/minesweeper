@@ -27,26 +27,6 @@ if (NOT raylib_FOUND)
     endif()
 endif()
 
-# Check if sqlite3 package is already installed
-find_package(SQLite3 REQUIRED)
-
-# If there's none, fetch and build sqlite3
-if (NOT SQLite3_FOUND)
-    include(FetchContent)
-    FetchContent_Declare(
-        sqlite3
-        DOWNLOAD_EXTRACT_TIMESTAMP OFF
-        URL https://www.sqlite.org/2024/sqlite-amalgamation-3450300.zip
-    )
-    FetchContent_GetProperties(sqlite3)
-    if (NOT sqlite3_POPULATED) # Have we downloaded sqlite3 yet?
-        set(FETCHCONTENT_QUIET NO)
-        FetchContent_Populate(sqlite3)
-        set(BUILD_EXAMPLES OFF CACHE BOOL "" FORCE) # don't build the supplied examples
-        add_subdirectory(${sqlite3_SOURCE_DIR} ${sqlite3_BINARY_DIR})
-    endif()
-endif()
-
 # Sources
 set(
     SOURCES
@@ -59,6 +39,7 @@ set(
     src/config.c
     src/db.c
     src/screen_high_score.c
+    src/sqlite3.c
 )
 
 # Executable
@@ -68,7 +49,7 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PRIVATE ${INCLUDES})
 
 # Libs (-l)
-target_link_libraries(${PROJECT_NAME} PRIVATE raylib sqlite3 m)
+target_link_libraries(${PROJECT_NAME} PRIVATE raylib m)
 
 # Output binary
 set_target_properties(
