@@ -55,6 +55,10 @@ directory it is ran from.
 
 ## Changelog
 
+- **v0.3.1**
+    - easy lvl 8x8:10 now
+    - added key R for restart
+    - added key F for autoflags
 - **v0.3.0**
     - added high scores
     - added false mines
