@@ -15,6 +15,7 @@ static r_array high_scores_[3]; /* Array of dynamic arrays of high scores */
 static bool data_loaded_;       /* Already loaded? */
 static Difficulty current_tab;  /* Current tab in terms of difficulty */
 static Font font_;
+static int cursor_;
 
 /* Load data from db*/
 static void init_arrays_(void);
@@ -45,9 +46,11 @@ void init_high_score_screen(void)
             return;
         }
     }
-    current_tab = D_EASY;
-    font_ = LoadFontEx("./resources/fonts/JetBrainsMonoNerdFont-Medium.ttf",
-                       HS_FONT_SIZE, NULL, 0);
+
+    font_   = LoadFontEx("./resources/fonts/JetBrainsMonoNerdFont-Medium.ttf",
+                         HS_FONT_SIZE, NULL, 0);
+    cursor_ = 0;
+    current_tab  = D_EASY;
     data_loaded_ = true;
 }
 
@@ -81,17 +84,27 @@ void update_high_score_screen(void)
         return;
     }
 
+    /* Scroll */
+    int max_cursor = kv_size(high_scores_[current_tab]) - 1;
+    cursor_ -= GetMouseWheelMove();
+    cursor_ = cursor_ < 0 ? 0 : cursor_;
+    cursor_ = cursor_ > max_cursor ? max_cursor : cursor_;
+
+    /* Clicks */
     Vector2 mouse_pos = GetMousePosition();
 
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
         if (CheckCollisionPointRec(mouse_pos, get_difficulty_button_(D_EASY))) {
             current_tab = D_EASY;
+            cursor_     = 0;
         } else if (CheckCollisionPointRec(mouse_pos,
                                           get_difficulty_button_(D_MEDIUM))) {
             current_tab = D_MEDIUM;
+            cursor_     = 0;
         } else if (CheckCollisionPointRec(mouse_pos,
                                           get_difficulty_button_(D_HARD))) {
             current_tab = D_HARD;
+            cursor_     = 0;
         }
     }
 }
@@ -108,9 +121,9 @@ static void draw_high_scores(void)
     char hs[120];
     struct tm tp;
     r_array arr = high_scores_[current_tab];
-    for (int i = 0; i < kv_size(arr); i++) {
+    for (int i = cursor_; i < kv_size(arr); i++) {
         Record cur  = kv_A(arr, i);
-        Vector2 pos = {10, i * HS_FONT_SIZE};
+        Vector2 pos = {10, (i - cursor_) * HS_FONT_SIZE};
         time_t ts   = cur.timestamp;
         tp          = *localtime(&ts);
         strftime(str_time, 128, "%Y-%m-%d %H:%M:%S", &tp);
