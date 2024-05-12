@@ -7,15 +7,16 @@ const int COUNTER_WIDTH  = 20;
 const int COUNTER_HEIGHT = 40;
 const int FACE_SIZE      = 36;
 
+const int SIZEM[3]  = {8, 16, 16};
+const int SIZEN[3]  = {8, 16, 30};
+const int NMINES[3] = {10, 40, 99};
+
 const int DEFAULT_SCREEN_WIDTH  = CELL_SIZE * 10;
 const int DEFAULT_SCREEN_HEIGHT = CELL_SIZE * 10 + HEADER_HEIGHT;
 
 const Color BACKGROUND_COLOR = {200, 200, 200, 255};
 const Color ACCENT_COLOR     = {0, 0, 0, 255};
 
-const int SIZEM[3]  = {10, 16, 16};
-const int SIZEN[3]  = {10, 16, 30};
-const int NMINES[3] = {10, 40, 99};
 
 const char *DIFFICULTIES_STR[3] = {"Easy", "Medium", "Hard"};
 
