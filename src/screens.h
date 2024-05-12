@@ -41,6 +41,5 @@ void init_high_score_screen(void);
 void unload_high_score_screen(void);
 void update_high_score_screen(void);
 void draw_high_score_screen(void);
-void finalize_high_score_screen(void);
 
 #endif

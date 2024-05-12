@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "config.h"
@@ -39,7 +40,6 @@ int main(void)
     unload_main_menu_screen();
     unload_gameplay_screen();
     unload_high_score_screen();
-    finalize_high_score_screen();
     unload_textures();
     db_close();
 

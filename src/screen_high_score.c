@@ -1,7 +1,6 @@
 #include <sqlite3.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 
 #include "config.h"
@@ -35,6 +34,9 @@ static void draw_buttons(void);
 
 void init_high_score_screen(void)
 {
+    cursor_      = 0;
+    current_tab  = D_EASY;
+
     if (data_loaded_)
         return;
 
@@ -47,10 +49,9 @@ void init_high_score_screen(void)
         }
     }
 
-    font_   = LoadFontEx("./resources/fonts/JetBrainsMonoNerdFont-Medium.ttf",
-                         HS_FONT_SIZE, NULL, 0);
-    cursor_ = 0;
-    current_tab  = D_EASY;
+    if (!IsFontReady(font_))
+        font_ = LoadFontEx("./resources/fonts/JetBrainsMonoNerdFont-Medium.ttf",
+                           HS_FONT_SIZE, NULL, 0);
     data_loaded_ = true;
 }
 
@@ -63,15 +64,17 @@ static void init_arrays_(void)
 
 static void destroy_arrays_(void)
 {
-    kv_destroy(high_scores_[D_EASY]);
-    kv_destroy(high_scores_[D_MEDIUM]);
-    kv_destroy(high_scores_[D_HARD]);
-    data_loaded_ = false;
+    if (data_loaded_) {
+        kv_destroy(high_scores_[D_EASY]);
+        kv_destroy(high_scores_[D_MEDIUM]);
+        kv_destroy(high_scores_[D_HARD]);
+        data_loaded_ = false;
+    }
 }
 
 void unload_high_score_screen(void)
 {
-    return;
+    destroy_arrays_();
 }
 
 void update_high_score_screen(void)
