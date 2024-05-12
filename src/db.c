@@ -8,7 +8,7 @@ static const char *DB_PATH = "./database/minesweeper.db";
 static const char *CREATE_TABLE_SQL
     = "CREATE TABLE IF NOT EXISTS minesweeper(\n"
       "    id INTEGER PRIMARY KEY,\n"
-      "    timestamp TEXT,\n"
+      "    timestamp INTEGER,\n"
       "    time REAL,\n"
       "    difficulty TEXT\n"
       ");";
@@ -56,13 +56,13 @@ int db_close(void)
 
 int db_save_record(double time, const char *difficulty)
 {
-    char sql_query[2048];
+    char sql_query[1024];
     int err;
     char *error;
 
     sprintf(sql_query,
             "INSERT INTO minesweeper (timestamp, time, difficulty)"
-            "VALUES (datetime('now', 'localtime'), %f, '%s');",
+            "VALUES (unixepoch(), %f, '%s');",
             time, difficulty);
 
     if ((err = sqlite3_exec(DB, sql_query, NULL, NULL, &error))) {
