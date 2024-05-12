@@ -41,7 +41,8 @@ void init_high_score_screen(void)
     for (int i = D_EASY; i <= D_HARD; i++) {
         if (db_fetch_all_by_difficulty(i, &high_scores_[i]) != SQLITE_OK) {
             destroy_arrays_();
-            abort();
+            should_close = true;
+            return;
         }
     }
     current_tab  = D_EASY;

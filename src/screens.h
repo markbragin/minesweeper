@@ -22,6 +22,7 @@ typedef enum Face {
 } Face;
 
 extern GameScreen current_screen;
+extern bool should_close;
 
 /* Main menu screen */
 void init_main_menu_screen(void);

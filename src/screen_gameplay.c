@@ -58,7 +58,8 @@ void init_gameplay_screen(Difficulty difficulty)
     grid_destroy();
     if (grid_init(sizem_, sizen_, nmines_) < 0) {
         perror("Can't initialize grid");
-        abort();
+        should_close = true;
+        return;
     };
 }
 

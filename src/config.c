@@ -22,7 +22,6 @@ const char *DIFFICULTIES_STR[3] = {"Easy", "Medium", "Hard"};
 const int MM_FONT_SIZE  = 40;
 const Color HOVER_COLOR = {110, 110, 110, 255};
 
-/* Main menu buttons */
 const int MM_BUTTON_WIDTH  = 200;
 const int MM_BUTTON_HEIGHT = 50;
 const int MM_BUTTON_GAP    = 20;

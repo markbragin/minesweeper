@@ -8,6 +8,7 @@
 
 /* Shared variables */
 GameScreen current_screen = UNKNOWN;
+bool should_close = false;
 
 /* Local functions */
 static void update_draw_frame_(void);
@@ -31,7 +32,7 @@ int main(void)
     current_screen = MAIN_MENU;
     init_main_menu_screen();
 
-    while (!WindowShouldClose()) {
+    while (!WindowShouldClose() && !should_close) {
         update_draw_frame_();
     }
 
