@@ -45,9 +45,9 @@ void init_high_score_screen(void)
             return;
         }
     }
-    current_tab  = D_EASY;
-    font_        = LoadFontEx("./resources/JetBrainsMonoNerdFont-Medium.ttf",
-                              HS_FONT_SIZE, NULL, 0);
+    current_tab = D_EASY;
+    font_ = LoadFontEx("./resources/fonts/JetBrainsMonoNerdFont-Medium.ttf",
+                       HS_FONT_SIZE, NULL, 0);
     data_loaded_ = true;
 }
 
