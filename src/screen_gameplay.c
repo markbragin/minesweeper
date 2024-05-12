@@ -78,6 +78,11 @@ void update_gameplay_screen(void)
         return;
     }
 
+    /* Restart on R */
+    if (IsKeyPressed(KEY_R)) {
+        init_gameplay_screen(difficulty_);
+    }
+
     /* Feature for Sanek */
     if (IsKeyPressed(KEY_F)) {
         auto_flags_ = auto_flags_ ? false : true;
