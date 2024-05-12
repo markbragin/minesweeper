@@ -125,7 +125,7 @@ void update_gameplay_screen(void)
         }
 
         if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-            up_around(cell_down_.x, cell_down_.y);
+            /* up_around(cell_down_.x, cell_down_.y); */
             if (mouse_pos.y <= HEADER_HEIGHT)
                 return;
 

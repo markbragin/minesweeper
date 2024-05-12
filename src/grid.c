@@ -211,8 +211,9 @@ int open_around(int i, int j)
 
 void down_around(int i, int j)
 {
-    /* Ignore bad indexes */
-    if (i < 0 || i >= sizem_ || j < 0 || j > sizen_)
+    /* Ignore bad indexes and flag */
+    if (i < 0 || i >= sizem_ || j < 0 || j > sizen_
+        || visible_grid_[i * sizen_ + j] == C_FLAG)
         return;
 
     int idx = i * sizen_ + j;
