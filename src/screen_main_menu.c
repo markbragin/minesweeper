@@ -5,22 +5,22 @@
 #include "screens.h"
 
 /* Shared variables */
-int SIZEM;
-int SIZEN;
-int NMINES;
-Difficulty DIFFICULTY;
+int sizem;
+int sizen;
+int nmines;
+Difficulty difficulty;
 
-static bool FINISH_SCREEN; /* Should screen finish */
+static bool finish_screen_; /* Should screen finish */
 
 /* Returns rectangle of i button, or {0, 0, 0, 0} on bad id.
  * Easy - 0 (D_EASY)
  * Medium - 1 (D_MEDIUM)
  * Hard - 2 (D_HARD) */
-static Rectangle get_button(int i);
+static Rectangle get_button_(int i);
 
 void init_main_menu_screen(void)
 {
-    FINISH_SCREEN = false;
+    finish_screen_ = false;
 }
 
 void unload_main_menu_screen(void)
@@ -33,24 +33,24 @@ void update_main_menu_screen(void)
     Vector2 mouse_pos = GetMousePosition();
 
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
-        if (CheckCollisionPointRec(mouse_pos, get_button(D_EASY))) {
-            SIZEM         = 10;
-            SIZEN         = 10;
-            NMINES        = 10;
-            DIFFICULTY    = D_EASY;
-            FINISH_SCREEN = true;
-        } else if (CheckCollisionPointRec(mouse_pos, get_button(D_MEDIUM))) {
-            SIZEM         = 16;
-            SIZEN         = 16;
-            NMINES        = 40;
-            DIFFICULTY    = D_MEDIUM;
-            FINISH_SCREEN = true;
-        } else if (CheckCollisionPointRec(mouse_pos, get_button(D_HARD))) {
-            SIZEM         = 16;
-            SIZEN         = 30;
-            NMINES        = 99;
-            DIFFICULTY    = D_HARD;
-            FINISH_SCREEN = true;
+        if (CheckCollisionPointRec(mouse_pos, get_button_(D_EASY))) {
+            sizem         = 10;
+            sizen         = 10;
+            nmines        = 10;
+            difficulty    = D_EASY;
+            finish_screen_ = true;
+        } else if (CheckCollisionPointRec(mouse_pos, get_button_(D_MEDIUM))) {
+            sizem         = 16;
+            sizen         = 16;
+            nmines        = 40;
+            difficulty    = D_MEDIUM;
+            finish_screen_ = true;
+        } else if (CheckCollisionPointRec(mouse_pos, get_button_(D_HARD))) {
+            sizem         = 16;
+            sizen         = 30;
+            nmines        = 99;
+            difficulty    = D_HARD;
+            finish_screen_ = true;
         }
     }
 }
@@ -59,7 +59,7 @@ void draw_main_menu_screen(void)
 {
     int text_width, posx_text, posy_text;
     Rectangle buttons[]
-        = {get_button(D_EASY), get_button(D_MEDIUM), get_button(D_HARD)};
+        = {get_button_(D_EASY), get_button_(D_MEDIUM), get_button_(D_HARD)};
 
     /* Draw buttons */
     for (int i = D_EASY; i <= D_HARD; i++) {
@@ -77,7 +77,7 @@ void draw_main_menu_screen(void)
     }
 }
 
-static Rectangle get_button(int i)
+static Rectangle get_button_(int i)
 {
     if (i < 0 || i > 2)
         return (Rectangle) {0, 0, 0, 0};
@@ -91,5 +91,5 @@ static Rectangle get_button(int i)
 
 bool finish_main_menu_screen(void)
 {
-    return FINISH_SCREEN;
+    return finish_screen_;
 }

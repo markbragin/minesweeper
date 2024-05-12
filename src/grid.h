@@ -2,7 +2,7 @@
 #define _GRID_H_
 
 /* Used for array indexes. Don't change numbers! */
-typedef enum CELL_TYPE {
+typedef enum CellType {
     C_EMPTY = 0,
     C_ONE,
     C_TWO,
@@ -17,7 +17,7 @@ typedef enum CELL_TYPE {
     C_FLAG,
     C_MINE,
     C_DOWN
-} CELL_TYPE;
+} CellType;
 
 /* Const pointers to allocated grids. NULL if unallocated */
 extern const int *GRID;

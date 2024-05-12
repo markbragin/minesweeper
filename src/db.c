@@ -14,31 +14,31 @@ static const char *CREATE_TABLE_SQL
       ");";
 
 /* Create ./database directory if needed */
-static void create_database_dir(void);
-static sqlite3 *DB;
+static void create_database_dir_(void);
+static sqlite3 *db_;
 
 int db_open(void)
 {
     int err;
     char *error;
 
-    create_database_dir();
+    create_database_dir_();
 
-    if ((err = sqlite3_open(DB_PATH, &DB))) {
+    if ((err = sqlite3_open(DB_PATH, &db_))) {
         fprintf(stderr, "Can't connect to the database '%s': %s\n", DB_PATH,
-                sqlite3_errmsg(DB));
+                sqlite3_errmsg(db_));
         return err;
     }
 
     /* Creates main table if not exists */
-    if ((err = sqlite3_exec(DB, CREATE_TABLE_SQL, NULL, NULL, &error))) {
+    if ((err = sqlite3_exec(db_, CREATE_TABLE_SQL, NULL, NULL, &error))) {
         fprintf(stderr, "Error SQL: %s\n", error);
         sqlite3_free(error);
     }
     return err;
 }
 
-static void create_database_dir(void)
+static void create_database_dir_(void)
 {
     struct stat st;
     if (stat("./database", &st) == -1) {
@@ -50,7 +50,7 @@ static void create_database_dir(void)
 
 int db_close(void)
 {
-    int err = sqlite3_close(DB);
+    int err = sqlite3_close(db_);
     return err;
 }
 
@@ -65,7 +65,7 @@ int db_save_record(double time, const char *difficulty)
             "VALUES (unixepoch(), %f, '%s');",
             time, difficulty);
 
-    if ((err = sqlite3_exec(DB, sql_query, NULL, NULL, &error))) {
+    if ((err = sqlite3_exec(db_, sql_query, NULL, NULL, &error))) {
         fprintf(stderr, "Can't save current result\n");
         fprintf(stderr, "Error SQL: %s\n", error);
         sqlite3_free(error);

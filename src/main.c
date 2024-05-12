@@ -7,10 +7,10 @@
 #include "textures.h"
 
 /* Shared variables */
-GameScreen CURRENT_SCREEN = UNKNOWN;
+GameScreen current_screen = UNKNOWN;
 
 /* Local functions */
-static void update_draw_frame(void);
+static void update_draw_frame_(void);
 
 int main(void)
 {
@@ -28,11 +28,11 @@ int main(void)
 
     load_textures();
 
-    CURRENT_SCREEN = MAIN_MENU;
+    current_screen = MAIN_MENU;
     init_main_menu_screen();
 
     while (!WindowShouldClose()) {
-        update_draw_frame();
+        update_draw_frame_();
     }
 
     unload_main_menu_screen();
@@ -43,18 +43,18 @@ int main(void)
     return 0;
 }
 
-static void update_draw_frame(void)
+static void update_draw_frame_(void)
 {
-    switch (CURRENT_SCREEN) {
+    switch (current_screen) {
     case MAIN_MENU: {
         update_main_menu_screen();
         if (finish_main_menu_screen()) {
-            int width  = SIZEN * CELL_SIZE;
-            int height = HEADER_HEIGHT + SIZEM * CELL_SIZE;
+            int width  = sizen * CELL_SIZE;
+            int height = HEADER_HEIGHT + sizem * CELL_SIZE;
             SetWindowMinSize(width, height);
             SetWindowSize(width, height);
             init_gameplay_screen();
-            CURRENT_SCREEN = GAMEPLAY;
+            current_screen = GAMEPLAY;
         }
         break;
     }
@@ -62,7 +62,7 @@ static void update_draw_frame(void)
         update_gameplay_screen();
         if (finish_gameplay_screen()) {
             init_main_menu_screen();
-            CURRENT_SCREEN = MAIN_MENU;
+            current_screen = MAIN_MENU;
             SetWindowMinSize(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
             SetWindowSize(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
         }
@@ -74,7 +74,7 @@ static void update_draw_frame(void)
     BeginDrawing();
     ClearBackground(GRAY);
 
-    switch (CURRENT_SCREEN) {
+    switch (current_screen) {
     case MAIN_MENU:
         draw_main_menu_screen();
         break;

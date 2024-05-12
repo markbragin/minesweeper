@@ -20,13 +20,13 @@ typedef enum Difficulty {
 
 extern const char *DIFFICULTIES_STR[];
 
-extern int FONT_SIZE;
-extern Color HOVER_COLOR;
-extern Color BUTTON_COLOR;
+extern const int FONT_SIZE;
+extern const Color HOVER_COLOR;
+extern const Color BUTTON_COLOR;
 
 /* Main menu buttons */
-extern int MM_BUTTON_WIDTH;
-extern int MM_BUTTON_HEIGHT;
-extern int MM_BUTTON_GAP;
+extern const int MM_BUTTON_WIDTH;
+extern const int MM_BUTTON_HEIGHT;
+extern const int MM_BUTTON_GAP;
 
 #endif

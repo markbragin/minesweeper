@@ -12,11 +12,11 @@ const int DEFAULT_SCREEN_HEIGHT = CELL_SIZE * 10 + HEADER_HEIGHT;
 
 const char *DIFFICULTIES_STR[3] = {"Easy", "Medium", "Hard"};
 
-int FONT_SIZE      = 40;
-Color HOVER_COLOR  = {110, 110, 110, 255};
-Color BUTTON_COLOR = BLACK;
+const int FONT_SIZE      = 40;
+const Color HOVER_COLOR  = {110, 110, 110, 255};
+const Color BUTTON_COLOR = {0, 0, 0, 255};
 
 /* Main menu buttons */
-int MM_BUTTON_WIDTH  = 200;
-int MM_BUTTON_HEIGHT = 50;
-int MM_BUTTON_GAP    = 20;
+const int MM_BUTTON_WIDTH  = 200;
+const int MM_BUTTON_HEIGHT = 50;
+const int MM_BUTTON_GAP    = 20;

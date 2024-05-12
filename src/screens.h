@@ -12,7 +12,7 @@ typedef enum GameScreen {
 } GameScreen;
 
 /* Used for array indexes. Don't change numbers! */
-typedef enum {
+typedef enum Face {
     F_CLICK = 0,
     F_LOST,
     F_SMILE,
@@ -20,12 +20,12 @@ typedef enum {
     F_WIN
 } Face;
 
-extern GameScreen CURRENT_SCREEN;
+extern GameScreen current_screen;
 
-extern int SIZEM;
-extern int SIZEN;
-extern int NMINES;
-extern Difficulty DIFFICULTY;
+extern int sizem;
+extern int sizen;
+extern int nmines;
+extern Difficulty difficulty;
 
 /* Main menu screen */
 void init_main_menu_screen(void);

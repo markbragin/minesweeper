@@ -12,20 +12,20 @@ Texture counter[11];
 Texture faces[5];
 
 /* Local (to module) variables */
-static bool textures_loaded = false;
-static void load_cells(void);
-static void load_counter(void);
-static void load_faces(void);
+static bool textures_loaded_ = false;
+static void load_cells_(void);
+static void load_counter_(void);
+static void load_faces_(void);
 
 void load_textures(void)
 {
-    load_cells();
-    load_counter();
-    load_faces();
-    textures_loaded = true;
+    load_cells_();
+    load_counter_();
+    load_faces_();
+    textures_loaded_ = true;
 }
 
-static void load_cells(void)
+static void load_cells_(void)
 {
     Image im_cells[14];
 
@@ -51,7 +51,7 @@ static void load_cells(void)
     }
 }
 
-static void load_counter(void)
+static void load_counter_(void)
 {
     Image im_counter[11];
 
@@ -74,7 +74,7 @@ static void load_counter(void)
     }
 }
 
-static void load_faces(void)
+static void load_faces_(void)
 {
     Image im_faces[5];
 
