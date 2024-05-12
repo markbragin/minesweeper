@@ -190,7 +190,7 @@ void draw_gameplay_screen(void)
 
     for (int i = 0; i < sizem_; i++) {
         for (int j = 0; j < sizen_; j++) {
-            DrawTexture(cells[VISIBLE_GRID[i * sizem_ + j]],
+            DrawTexture(cells[VISIBLE_GRID[i * sizen_ + j]],
                         offx + j * CELL_SIZE, offy + i * CELL_SIZE, RAYWHITE);
         }
     }
