@@ -4,14 +4,6 @@
 #include "raylib.h"
 #include "screens.h"
 
-/* Shared variables */
-int sizem;
-int sizen;
-int nmines;
-Difficulty difficulty;
-
-static bool finish_screen_; /* Should screen finish */
-
 /* Returns rectangle of i button, or {0, 0, 0, 0} on bad id.
  * Easy - 0 (D_EASY)
  * Medium - 1 (D_MEDIUM)
@@ -20,7 +12,9 @@ static Rectangle get_button_(int i);
 
 void init_main_menu_screen(void)
 {
-    finish_screen_ = false;
+    SetWindowMinSize(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
+    SetWindowSize(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
+    return;
 }
 
 void unload_main_menu_screen(void)
@@ -34,23 +28,14 @@ void update_main_menu_screen(void)
 
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) {
         if (CheckCollisionPointRec(mouse_pos, get_button_(D_EASY))) {
-            sizem         = 10;
-            sizen         = 10;
-            nmines        = 10;
-            difficulty    = D_EASY;
-            finish_screen_ = true;
+            init_gameplay_screen(D_EASY);
+            current_screen = GAMEPLAY;
         } else if (CheckCollisionPointRec(mouse_pos, get_button_(D_MEDIUM))) {
-            sizem         = 16;
-            sizen         = 16;
-            nmines        = 40;
-            difficulty    = D_MEDIUM;
-            finish_screen_ = true;
+            init_gameplay_screen(D_MEDIUM);
+            current_screen = GAMEPLAY;
         } else if (CheckCollisionPointRec(mouse_pos, get_button_(D_HARD))) {
-            sizem         = 16;
-            sizen         = 30;
-            nmines        = 99;
-            difficulty    = D_HARD;
-            finish_screen_ = true;
+            init_gameplay_screen(D_HARD);
+            current_screen = GAMEPLAY;
         }
     }
 }
@@ -87,9 +72,4 @@ static Rectangle get_button_(int i)
         = (GetScreenHeight() - MM_BUTTON_HEIGHT * 3 - 2 * MM_BUTTON_GAP) / 2
         + MM_BUTTON_HEIGHT * i + MM_BUTTON_GAP * i;
     return (Rectangle) {posx, posy, MM_BUTTON_WIDTH, MM_BUTTON_HEIGHT};
-}
-
-bool finish_main_menu_screen(void)
-{
-    return finish_screen_;
 }

@@ -48,24 +48,11 @@ static void update_draw_frame_(void)
     switch (current_screen) {
     case MAIN_MENU: {
         update_main_menu_screen();
-        if (finish_main_menu_screen()) {
-            int width  = sizen * CELL_SIZE;
-            int height = HEADER_HEIGHT + sizem * CELL_SIZE;
-            SetWindowMinSize(width, height);
-            SetWindowSize(width, height);
-            init_gameplay_screen();
-            current_screen = GAMEPLAY;
-        }
         break;
     }
     case GAMEPLAY: {
         update_gameplay_screen();
-        if (finish_gameplay_screen()) {
-            init_main_menu_screen();
-            current_screen = MAIN_MENU;
-            SetWindowMinSize(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
-            SetWindowSize(DEFAULT_SCREEN_WIDTH, DEFAULT_SCREEN_HEIGHT);
-        }
+        break;
     }
     default:
         break;

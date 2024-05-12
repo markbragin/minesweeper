@@ -19,11 +19,14 @@ typedef enum State {
 /* Local (to module) variables */
 static State current_state_;
 static Face current_face_;
-static bool finish_screen_; /* Should screen finish */
-static Vector2 cell_down_;  /* Last cell pressed */
-static bool auto_flags_;    /* Secret mode */
-static bool first_click_;   /* First click? */
-
+static bool finish_screen_;          /* Should screen finish */
+static Vector2 cell_down_;           /* Last cell pressed */
+static bool auto_flags_;             /* Secret mode */
+static bool first_click_;            /* First click? */
+static int sizem_;                   /* Rows */
+static int sizen_;                   /* Cols */
+static int nmines_;                  /* Number of mines */
+static Difficulty difficulty_;       /* Difficulty*/
 static int flags_left_;              /* Number of flags */
 static int nopened_;                 /* Number of opened cells */
 static double start_time_, end_time; /* Timing */
@@ -32,18 +35,29 @@ static char message_[256];           /* Message to print on victory or defeat */
 static void draw_header_(void);
 static Rectangle get_face_rect_(void);
 
-void init_gameplay_screen(void)
+void init_gameplay_screen(Difficulty difficulty)
 {
+    /* Init static variables */
+    difficulty_    = difficulty;
+    sizem_         = SIZEM[difficulty];
+    sizen_         = SIZEN[difficulty];
+    nmines_        = NMINES[difficulty];
     current_state_ = S_PLAYING;
     current_face_  = F_SMILE;
     finish_screen_ = false;
     first_click_   = true;
-    flags_left_    = nmines;
+    flags_left_    = nmines_;
     nopened_       = 0;
 
+    /* Change window parameters */
+    int width  = sizen_ * CELL_SIZE;
+    int height = HEADER_HEIGHT + sizem_ * CELL_SIZE;
+    SetWindowMinSize(width, height);
+    SetWindowSize(width, height);
+
     grid_destroy();
-    if (grid_init(sizem, sizen, nmines) < 0) {
-        fprintf(stderr, "Can't initialize grid\n");
+    if (grid_init(sizem_, sizen_, nmines_) < 0) {
+        perror("Can't initialize grid");
         abort();
     };
 }
@@ -55,11 +69,12 @@ void unload_gameplay_screen(void)
 
 void update_gameplay_screen(void)
 {
-    Vector2 mouse_pos = GetMousePosition();
-
-    /* Finish on ESCAPE */
+    /* Main menu on ESCAPE */
     if (IsKeyPressed(KEY_ESCAPE)) {
-        finish_screen_ = true;
+        unload_gameplay_screen();
+        init_main_menu_screen();
+        current_screen = MAIN_MENU;
+        return;
     }
 
     /* Feature for Sanek */
@@ -67,10 +82,12 @@ void update_gameplay_screen(void)
         auto_flags_ = auto_flags_ ? false : true;
     }
 
+    Vector2 mouse_pos = GetMousePosition();
+
     /* New game on click on face */
     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)
         && CheckCollisionPointRec(mouse_pos, get_face_rect_())) {
-        init_gameplay_screen();
+        init_gameplay_screen(difficulty_);
     }
 
     if (current_state_ == S_PLAYING) {
@@ -79,12 +96,12 @@ void update_gameplay_screen(void)
         up_around(cell_down_.x, cell_down_.y);
 
         /* Offsets from {0, 0} when window resized. Need to center grid */
-        int offx = (GetScreenWidth() - CELL_SIZE * sizen) / 2;
-        int offy = (HEADER_HEIGHT + GetScreenHeight() - CELL_SIZE * sizem) / 2;
+        int offx = (GetScreenWidth() - CELL_SIZE * sizen_) / 2;
+        int offy = (HEADER_HEIGHT + GetScreenHeight() - CELL_SIZE * sizem_) / 2;
 
         int i   = (mouse_pos.y - offy) / CELL_SIZE;
         int j   = (mouse_pos.x - offx) / CELL_SIZE;
-        int idx = i * sizen + j;
+        int idx = i * sizen_ + j;
 
         /* Process click on header first */
         if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
@@ -95,7 +112,7 @@ void update_gameplay_screen(void)
 
         /* Process click on grid next */
         Rectangle grid_rect
-            = {offx, offy, CELL_SIZE * sizen, CELL_SIZE * sizem};
+            = {offx, offy, CELL_SIZE * sizen_, CELL_SIZE * sizem_};
         if (!CheckCollisionPointRec(mouse_pos, grid_rect)) {
             return;
         }
@@ -139,13 +156,13 @@ void update_gameplay_screen(void)
                     flags_left_ -= set_easy_flags(i, j);
             }
 
-            if (nopened_ + nmines == sizem * sizen) {
+            if (nopened_ + nmines_ == sizem_ * sizen_) {
                 current_state_ = S_WON;
                 end_time       = GetTime();
                 open_safe_cells();
                 set_safe_flags();
                 db_save_record((end_time - start_time_),
-                               DIFFICULTIES_STR[difficulty]);
+                               DIFFICULTIES_STR[difficulty_]);
             }
         }
 
@@ -154,7 +171,7 @@ void update_gameplay_screen(void)
 
             int i   = (mouse_pos.y - offy) / CELL_SIZE;
             int j   = (mouse_pos.x - offx) / CELL_SIZE;
-            int idx = i * sizen + j;
+            int idx = i * sizen_ + j;
 
             if (VISIBLE_GRID[idx] == C_CLOSED || VISIBLE_GRID[idx] == C_FLAG) {
                 flags_left_ -= toggle_flag(i, j);
@@ -168,12 +185,12 @@ void draw_gameplay_screen(void)
     draw_header_();
 
     /* Offsets from {0, 0} when window resized. Need to center grid */
-    int offx = (GetScreenWidth() - CELL_SIZE * sizen) / 2;
-    int offy = (HEADER_HEIGHT + GetScreenHeight() - CELL_SIZE * sizem) / 2;
+    int offx = (GetScreenWidth() - CELL_SIZE * sizen_) / 2;
+    int offy = (HEADER_HEIGHT + GetScreenHeight() - CELL_SIZE * sizem_) / 2;
 
-    for (int i = 0; i < sizem; i++) {
-        for (int j = 0; j < sizen; j++) {
-            DrawTexture(cells[VISIBLE_GRID[i * sizem + j]],
+    for (int i = 0; i < sizem_; i++) {
+        for (int j = 0; j < sizen_; j++) {
+            DrawTexture(cells[VISIBLE_GRID[i * sizem_ + j]],
                         offx + j * CELL_SIZE, offy + i * CELL_SIZE, LIGHTGRAY);
         }
     }

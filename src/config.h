@@ -18,6 +18,12 @@ typedef enum Difficulty {
     D_HARD
 } Difficulty;
 
+/* Sizes of grid of different difficulties */
+extern const int SIZEM[3];
+extern const int SIZEN[3];
+extern const int NMINES[3];
+
+/* Str representation of difficutlty*/
 extern const char *DIFFICULTIES_STR[];
 
 extern const int FONT_SIZE;

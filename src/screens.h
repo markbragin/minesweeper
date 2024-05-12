@@ -22,23 +22,16 @@ typedef enum Face {
 
 extern GameScreen current_screen;
 
-extern int sizem;
-extern int sizen;
-extern int nmines;
-extern Difficulty difficulty;
-
 /* Main menu screen */
 void init_main_menu_screen(void);
 void unload_main_menu_screen(void);
 void update_main_menu_screen(void);
 void draw_main_menu_screen(void);
-bool finish_main_menu_screen(void);
 
 /* Gameplay screen */
-void init_gameplay_screen(void);
+void init_gameplay_screen(Difficulty difficulty);
 void unload_gameplay_screen(void);
 void update_gameplay_screen(void);
 void draw_gameplay_screen(void);
-bool finish_gameplay_screen(void);
 
 #endif
