@@ -49,7 +49,8 @@ where 4 is the number of concurrent processes to use when building.
 
 Binary `minesweeper` will be located in the root directory of the project.
 
-**Note**: app needs `"./resources/"` to be present in the directory it is ran from.
+**Note**: app needs `./resources/` and `./database/` to be present in the
+directory it is ran from.
 
 
 ## Changelog
